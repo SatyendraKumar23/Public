@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temple KMS</title>
+    <title>Temple KMS: (Samples)</title>
 
 
 </head>
@@ -18,6 +18,7 @@
 
 
 
+
 <!--javascript-->
 <script>
 
@@ -25,8 +26,43 @@ let onLoad_core_1mn = () => {
 
 //test..
 let mTest = () => {
+
+     //set btns..
+     let mSet_btns = (mE) => {
+        let mBtnsDiv = document.createElement("div");
+        mE.appendChild(mBtnsDiv);
+
+        //set..
+        let mBtn0 = document.createElement("button");
+        mBtn0.style.margin = "0.5vh";
+        mBtn0.innerHTML = "Sample Table 1";
+        mBtnsDiv.appendChild(mBtn0);
+        //events..
+        mBtn0.onclick = () => {
+            mSample_table1(mSamplesDiv);
+        };
+
+        let mBtn1 = document.createElement("button");
+        mBtn1.style.margin = "0.5vh";
+        mBtn1.innerHTML = "Sample Excel Sheel Generation 1";
+        mBtnsDiv.appendChild(mBtn1);
+        //events..
+        mBtn1.onclick = () => {
+            mSample_ExcelSheelGen(mSamplesDiv);
+        };
+    };
+     mSet_btns(document.body);
+
+
+
+
+    //----------Samples Starts Here----------//
+    let mSamplesDiv = document.createElement("div");
+    document.body.appendChild(mSamplesDiv);
     //----Sample Table 1----//
     let mSample_table1 = (mRootE=document.body) => {
+        mSamplesDiv.innerHTML = ""; //reset..
+
                           //mContent.....
                           var mContent = document.createElement("div");
                           mContent.style = `width: 95vw; height: 100%; 
@@ -455,7 +491,386 @@ let mTest = () => {
     
     
     }
-    mSample_table1(document.body);                
+    //mSample_table1(mSamplesDiv);
+    
+    
+    //--Sample Excel Sheel Generation--//
+    let mSample_ExcelSheelGen = (mRootE=document.body) => {
+        mSamplesDiv.innerHTML = ""; //reset..
+
+
+        //mRndr..
+        //rndr.. (Table)
+        let mRndr = {
+                                    "l": [ 
+                                        {
+                                            "0": "Recipe Name",
+                                            "1": "9vw",
+                                            "key": "recipe_name", 
+                                        },
+                                        {
+                                            "0": "Recipe Type",
+                                            "1": "7vw",
+                                            "key": "recipe_type", 
+                                        },
+                                        {
+                                            "0": "Min Yield",
+                                            "1": "6vw",
+                                            "key": "min_yield", 
+                                        },
+                                        {
+                                            "0": "Max Yield",
+                                            "1": "6vw",
+                                            "key": "max_yield", 
+                                        },
+                                        {
+                                            "0": "Price/Unit",
+                                            "1": "6vw",
+                                            "key": "kri", //price_unit 
+                                        },
+                                        {
+                                            "0": "Serving",
+                                            "1": "12vw",
+                                            "key": "serving_quantity", 
+                                        },
+                                        {
+                                            "0": "Created By",
+                                            "1": "6vw",
+                                            "key": "created_by", 
+                                        },
+                                        {
+                                            "0": "Created On",
+                                            "1": "15vw",
+                                            "key": "created_on", 
+                                        },
+                                        {
+                                            "0": "Status",
+                                            "1": "6vw",
+                                            "key": "status", 
+                                        },
+
+                                        {
+                                            "0": "",
+                                            "1": "10vw",
+                                            "key": "actions", 
+                                        },
+
+                                    ]
+                     };
+
+        //mPagi_dta.data.l
+        let mPagi_dta = {
+            "data": {
+                "l": [
+                
+                [
+                {
+                    "kom_recipes": {
+                        "id": "927fb63c-0146-11ee-8307-a1dbbd3149dd",
+                        "recipe_name": "my rec 1",
+                        "details_or_desc": "",
+                        "status": "Active",
+                        "meal_type": [
+                            2,
+                            1
+                        ],
+                        "consumer_type": [
+                            1,
+                            2
+                        ],
+                        "recipe_type": "Ekadashi, New",
+                        "set_recipe_yield_val": 1,
+                        "set_recipe_yield_unit": 3,
+                        "min_yield": 78,
+                        "max_yield": 89,
+                        "created_by": "Admin",
+                        "serving_unit": 1,
+                        "serving_sel": 2,
+                        "serving_quantity": 90,
+                        "recipe_category": 1,
+                        "created_on": "2023-06-02T18:38:31.223686+05:30",
+                        "kri": "56Rs"
+                    }
+                },
+                {
+                    "kom_recipes": {
+                        "id": "343a9bfa-0146-11ee-8307-a1dbbd3149dd",
+                        "recipe_name": "Mix Vegetable in CG Gravy",
+                        "details_or_desc": "",
+                        "status": 1,
+                        "meal_type": [
+                            1
+                        ],
+                        "consumer_type": [
+                            2
+                        ],
+                        "recipe_type": [
+                            3
+                        ],
+                        "set_recipe_yield_val": 1,
+                        "set_recipe_yield_unit": 2,
+                        "min_yield": 67,
+                        "max_yield": 80,
+                        "created_by": "Admin",
+                        "serving_unit": 2,
+                        "serving_sel": 1,
+                        "serving_quantity": 90,
+                        "recipe_category": 1,
+                        "created_on": "2023-06-02T18:35:53.064961+05:30",
+                        "kri": [
+                            {
+                                "csr_store_id": "1eefc54a-0146-11ee-8307-a1dbbd3149dd",
+                                "iq": 1,
+                                "sp": 0,
+                                "su": 3
+                            },
+                            {
+                                "csr_store_id": "1ef10bd0-0146-11ee-8307-a1dbbd3149dd",
+                                "iq": 4,
+                                "sp": 0,
+                                "su": 3
+                            }
+                        ]
+                    }
+                }
+                ]
+
+                ]
+            }
+        };
+
+        
+                                                //set vars..
+                                                //let mTotalCellRows = 0; //0
+                                                //let mMergeCell = [/*data will be fetched here*/];
+                                                let mStyleCell = [/*data will be fetched here*/];
+                                                //headers..
+                                                let mIsHead1_SET = false;
+                                                let mFmt1 = (a) => {
+                                                    let mNew = [];
+                                                    //gen..
+                                                    for (let i = 0; i < a.length; i++) {
+                                                        let e = a[i];
+                                                        let a1 = e;
+                                                        for (let i1 = 0; i1 < a1.length; i1++) {
+                                                            const e1 = a1[i1]["kom_recipes"];
+                                                            //row..
+                                                            function mGetRow(mData) {
+                                                                let mNew = []; //{}
+                                                                //set vars..
+                                                                let mCurrCellRows = 0;
+                                                                //set obj..
+                                                                let mSetObj = (mP={}) => {
+                                                                    let mNewObj = {
+                                                                        //Note: Beware with keys like => 0,1,2 [it will auto change postition]
+                                                                        //All keys must be in Sequence.. 
+                                                                        "recipe_name": { v: "-", s: {}, },
+                                                                        "recipe_type": { v: "-", s: {}, },
+                                                                        "min_yield": { v: "-", s: {}, },
+                                                                        "max_yield": { v: "-", s: {}, },
+                                                                        "kri": { v: "-", s: {}, },
+                                                                        "serving_quantity": { v: "-", s: {}, },
+                                                                        "created_by": { v: "-", s: {}, },
+                                                                        "created_on": { v: "-", s: {}, },
+                                                                        "status": { v: "-", s: {}, },
+                                                                    };
+    
+                                                                    //get fmt obj..
+                                                                    let mFmtObj = (a={}, b={}, k="") => {
+                                                                        let mObjV = {};
+                                                                        for (let i = 0; i < Object.keys(a).length; i++) {
+                                                                            const e_k = Object.keys(a)[i];
+                                                                            const e_v = a[e_k];
+                                                                            //set (default)
+                                                                            mObjV[e_k] = e_v[k];
+                                                                            //set..(overwrite) 
+                                                                            if (b.hasOwnProperty(e_k)==true) {
+                                                                                if (b[e_k].hasOwnProperty(k)==true) {
+                                                                                    //store..
+                                                                                    mObjV[e_k] = b[e_k][k];
+                                                                                } 
+                                                                            }
+                                                                        }
+                                                                        //all ok..
+                                                                        return mObjV;
+                                                                    };
+                                                                    //--mFmtObj--//
+                                                                    //console.log(mFmtObj(mNewObj, mP, "s"));
+    
+                                                                    //store..
+                                                                    mNew.push(mFmtObj(mNewObj, mP, "v"));
+                                                                    /*//store..
+                                                                    mTotalCellRows+=1;
+                                                                    mCurrCellRows+=1;*/
+    
+                                                                    //store..(Style)
+                                                                    mStyleCell.push(mFmtObj(mNewObj, mP, "s"));
+    
+                                                                };
+    
+    
+                                                                 //set header..
+                                                                 let mSetHeader = () => {
+                                                                    console.log(`======mSetHeader========`);
+                                                                    let mS = {
+                                                                        alignment: { 
+                                                                            vertical: "center" 
+                                                                        },
+                                                                        fill: {
+                                                                            "fgColor": {
+                                                                                "rgb": "#002060" // mRndr["styles"]["mHead1"]["bg"]
+                                                                            }, 
+                                                                        },
+                                                                        //border: mStyle.border,
+                                                                        font: {
+                                                                            name: '',
+                                                                            //sz: 24,
+                                                                            bold: true,
+                                                                            color: { 
+                                                                                rgb: "#ffffff" //mRndr["styles"]["mHead1"]["color"]
+                                                                            }
+                                                                        }
+                                                                    };
+                                                                     
+    
+                                                                    mSetObj({ 
+                                                                        "recipe_name": {
+                                                                            v: `Recipe Name`,
+                                                                            s: mS, //Style
+                                                                        },
+    
+                                                                        "recipe_type": {
+                                                                            v: `Recipe Type`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "min_yield": {
+                                                                            v: `Min Yield`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "max_yield": {
+                                                                            v: `Max Yield`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "kri": {
+                                                                            v: `Price/Unit`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "serving_quantity": {
+                                                                            v: `Serving`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "created_by": {
+                                                                            v: `Created By`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "created_on": {
+                                                                            v: `Created On`,
+                                                                            s: mS, //Style
+                                                                        },
+                                                                        "status": {
+                                                                            v: `Status`,
+                                                                            s: mS, //Style
+                                                                        },
+    
+                                                                    });
+    
+                                                                };
+    
+                                                                //set vars..
+                                                                let mRowOrigin = 0;
+                                                                if (mIsHead1_SET==false) {
+                                                                    mIsHead1_SET=true;
+                                                                    mSetHeader();
+                                                                    mRowOrigin+=1;                                                                
+                                                                }
+    
+    
+                                                                //gen..
+                                                                let mRowObj = () => {
+                                                                    let mNew = {};
+                                                                    for (let i1 = 0; i1 < mRndr["l"].length; i1++) {
+                                                                        const mCurr_I1 = mRndr["l"][i1];
+                                                                        //find and set..  
+                                                                        if (mData.hasOwnProperty(mCurr_I1["key"])==true) {
+                                                                            //mCurr_I1.col(mData[mCurr_I1["key"]], mRow, i1);
+                                                                            //store..
+                                                                            //mNew[mCurr_I1["key"]] = mData[mCurr_I1["key"]]; //Use Json key name
+                                                                            //mNew[mCurr_I1["0"]] = mData[mCurr_I1["key"]]; //Use Table name
+                                                                            //set..                                                                   
+                                                                            if (mCurr_I1.hasOwnProperty("getVal")==true) {
+                                                                                let mVal = mCurr_I1["getVal"](
+                                                                                    mData[mCurr_I1["key"]],
+                                                                                    mData
+                                                                                );
+                                                                                //store..
+                                                                                mNew[mCurr_I1["key"]] = {
+                                                                                    "v": mVal, //Value
+                                                                                    "s": {}    //Style
+                                                                                }; //--OLD--  mNew[mCurr_I1["0"]]
+                                                                                //log..
+                                                                                //console.log(mVal);
+                                                                            }
+    
+                                                                        }
+                                                                    }
+                                                                    //all ok..
+                                                                    //store..
+                                                                    /*console.log(`=====mNew=======`);
+                                                                    console.log(mNew);*/
+                                                                    mSetObj(mNew);
+                                                                };
+                                                                mRowObj();
+    
+                                                                //return..
+                                                                return mNew;
+    
+                                                            }
+                                                            //mNew.push(mGetObj(e1));
+                                                            let mGetRow_RES = mGetRow(e1);
+                                                            if (Object.keys(mGetRow_RES).length>0) {
+                                                                mNew.push(...mGetRow_RES); 
+                                                            }
+    
+                                                        }
+                                                    }
+                                                    return mNew;
+                                                };
+                                                let mRow = mFmt1(mPagi_dta.data.l); 
+                                                console.log(mRow);
+                                                //return;
+    
+                                                //--Vali--//
+                                                if (mRow.length==0) {
+                                                    console.log(`err: no. rows found`);
+                                                    return;
+                                                }
+    
+                                                //mStyleCell
+                                                /*console.log(`=====mStyleCell=====`);
+                                                console.log(mStyleCell);
+                                                return;*/
+                                                
+                                                //export..
+                                                core_kms.fileExport.set({
+                                                    "json": {
+                                                        "rows": {
+                                                            "l": mRow, //[]
+                                                        },
+                                                        "style": {
+                                                            "l": mStyleCell //[]
+                                                        }
+                                                    },
+                                                    "out": {
+                                                        "filename": "recipe.xlsx",
+                                                    }
+                                                });
+
+
+    };
+    //mSample_ExcelSheelGen(mSamplesDiv);
+ 
+
+
 }
 
 mTest();
@@ -473,11 +888,16 @@ mTest();
 <script >
     import("../../libs/core_1mn/config/config_mn.js").then(() => {
         import("../../libs/core_1mn/core_1mn.js").then(() => {
+        import("./libs/core_kms/core_kms.js").then((v) => {
         console.log(core_1mn);
         console.log(config_mn);
+        console.log(core_kms);
         //onload..
         onLoad_core_1mn();
         //alert("Init success..");
+        }).catch((e) => {
+        console.log(e);
+       }); 
       }).catch((e) => {
         console.log(e);
       });
