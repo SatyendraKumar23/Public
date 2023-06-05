@@ -43,21 +43,25 @@ let mTest = () => {
 
         //set..
         mSet_Btn("Sample Table 1").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
             mSample_table1(mSamplesDiv);
         };
 
         //set..
         mSet_Btn("Sample Excel Sheel Generation 1").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
             mSample_ExcelSheelGen(mSamplesDiv);
         };
       
         //set..
         mSet_Btn("Sample Svg Loader 1").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
             mSample_SvgLoader(mSamplesDiv);
         };
 
  
         mSet_Btn("Sample Grid Cards 1").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
             mSample_gridCards1(mSamplesDiv);
         };
 
@@ -73,8 +77,6 @@ let mTest = () => {
     document.body.appendChild(mSamplesDiv);
     //----Sample Table 1----//
     let mSample_table1 = (mRootE=document.body) => {
-        mSamplesDiv.innerHTML = ""; //reset..
-
                           //mContent.....
                           var mContent = document.createElement("div");
                           mContent.style = `width: 95vw; height: 100%; 
@@ -508,9 +510,6 @@ let mTest = () => {
     
     //--Sample Excel Sheel Generation--//
     let mSample_ExcelSheelGen = (mRootE=document.body) => {
-        mSamplesDiv.innerHTML = ""; //reset..
-
-
         //mRndr..
         //rndr.. (Table)
         let mRndr = {
@@ -884,6 +883,7 @@ let mTest = () => {
 
     //--Sample Svg Loader--//
     let mSample_SvgLoader = (mRootE=document.body) => {
+        //set
         core_1mn['mSvg'].set({
         "0": "sample.svg",  //svg file name --OR-- <svg></svg>
         //"1": "YOUR_UNIQUE_ID",
@@ -916,8 +916,6 @@ let mTest = () => {
 
     //----Sample Grid Cards 1----//
     let mSample_gridCards1 = (mRootE=document.body) => {
-        mSamplesDiv.innerHTML = ""; //reset..
-
                           //mContent.....
                           var mContent = document.createElement("div");
                           mContent.style = `width: 95vw; height: 100%; 
