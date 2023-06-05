@@ -65,6 +65,13 @@ let mTest = () => {
             mSample_gridCards1(mSamplesDiv);
         };
 
+        mSet_Btn("DOM refrences").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
+            mSet_DOM_ref(mSamplesDiv);
+        };
+
+
+
 
     };
      mSet_btns(document.body);
@@ -1119,6 +1126,37 @@ let mTest = () => {
     }
 
 
+
+    //----DOM refrences----//
+    let mSet_DOM_ref = (mRootE=document.body) => {
+        let mDiv = document.createElement("div");
+        mDiv.style.margin = "10vh";
+        mRootE.appendChild(mDiv);
+
+        //set..
+        let mLinks = [
+            {
+                "0": `W3(W3 Schools) <label style="color:green; font-weight:bold;"> [For Styling] </label> `,
+                "1": "https://www.w3schools.com/jsref/dom_obj_style.asp"
+            },
+            {
+                "0": `Mozilla(MDN)  <label style="color:green; font-weight:bold;"> [For Styling] </label> `,
+                "1": "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style"
+            }
+        ];
+        //gen..
+        let a = mLinks;
+        for (let i = 0; i < a.length; i++) {
+            const e = a[i];
+            //set..
+            let mBox = document.createElement("div");
+            mDiv.appendChild(mBox);
+            mBox.innerHTML = `
+            <a href="${e["1"]}"> ${e["0"]} </a>
+            `;
+        }
+
+    };
 
 
  
