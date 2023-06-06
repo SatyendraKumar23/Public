@@ -205,7 +205,8 @@ var core_1mn = {
 
     //configuration settings....
     "conf": {
-      "mEnv": window.location.hostname.includes("localhost") ? 0 : 1, //0=>Development, //1=>Production
+      "mEnv": window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
+       ? 0 : 1, //0=>Development, //1=>Production
     },
 
 
