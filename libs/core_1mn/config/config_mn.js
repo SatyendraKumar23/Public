@@ -14,7 +14,7 @@ const config_mn = {
                 "mUrlDta": [
                     //-----DEV------//
                     {
-                      "url1": "http://localhost:85/",
+                      "url1": "http://localhost:7070/Public/mn-jdrq/temple-kms/", //"url1": "http://localhost:85/",
                       "url2": "http://localhost:85/nodeApi", //backend(Api) //http://localhost:2020/
                       //"url3": "http://localhost/",
                       //"url4": "http://localhost:7070/api-php-src2/SKILLEE_ENGLISH/app.php/",
