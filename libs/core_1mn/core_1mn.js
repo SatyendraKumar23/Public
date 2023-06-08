@@ -59,6 +59,21 @@ location /sites/mn/site8/mn_account {
 //METHOD-2
 //--Already Loaded by [Project (init file)]--//
 //console.log(config_mn);
+
+
+
+//----------------------------Params Info-------------------//
+/**
+ * @xcode = [reserved keyword]  //It will allow developer to intergrate his code in our systems
+  --USAGE-- {
+               "html": `<div> </div>`,
+               "css":  `<style> </style>`,
+               "js":  `<script> </script>`,
+               "dom": () => {return DOM;} || DOM, //Your DOM eg => document.createElement("div")
+            }
+ */
+ 
+
  
 
 //CSS..
@@ -3890,7 +3905,6 @@ var mBtn = core_1mn['btn']['4'].set({
 
     },
 
-    
 
     "dialog": {
 
@@ -4849,7 +4863,9 @@ var mBtn = core_1mn['btn']['4'].set({
       },
       //Auto set (datatype) of [elem] data
       "mAutoSetDataType": {
-        "set": (e) => {
+        "set": (e, mDefVal) => {
+          console.log(`mDefVal: ${mDefVal}`);
+
           //auto set [dataType] of any [element(eg. INPUT)]..Note: In case if [element] not (provided) then [it will return exact provided value [WITHOUT Modification]]
           //--Auto set (datatype) of [elem] value--//
            let mRndr = {
@@ -4883,7 +4899,14 @@ var mBtn = core_1mn['btn']['4'].set({
                  throw `[Error]: mRndr[e.type=${e.type}] (not-available)`;
                }
                //all ok..
-               return mRndr[e.type](e.value);
+               let eVal = e.value;
+               if (eVal=="") {
+                 if (mDefVal!==undefined) {
+                    eVal = mDefVal; //set (default) value (Schema Payload)
+                 }
+               }
+
+               return mRndr[e.type](eVal); //e.value
             }
             return e;
         }
@@ -5200,6 +5223,13 @@ var mBtn = core_1mn['btn']['4'].set({
       "mWares": {
         //We will check if value is (required by) Schema or not..
         "isRequired": (mSchema, key) => {
+          //check..
+          if (Object.keys(mSchema).length==0) {
+            console.warn(`Note: [core_1mn.mForm.mUtil.mWares] is returning (TRUE)..because no schema JSON found.`);
+            return true;
+          }
+
+
           /**
            * @mSchema => your schema
            * @key => your same payload and schema key
@@ -5226,7 +5256,143 @@ var mBtn = core_1mn['btn']['4'].set({
             throw `Error: [mWares.isRequired] ${e}`;
           }
         }
+      },
+
+      //Set (JSON) Schema vali..Rules on UI
+      "mSchValiRulesOnUI": {
+        "set": (mCurrDta1={}, //curr [fld] payload
+          mSchemaJSON={}) => { 
+            /*console.log(`======mSchValiRulesOnUI======`);
+            console.log(mCurrDta1);
+            console.log(mSchemaJSON);*/
+
+            //set..
+            let mKey1 = Object.keys(mCurrDta1["$mUsrData"])[0];
+            if (mSchemaJSON.hasOwnProperty("properties")==false) {
+              return; //Stop
+            }
+            //all ok..
+            let mSchProp = mSchemaJSON["properties"];
+            if (mSchProp.hasOwnProperty(mKey1)==false) {
+               return; //Stop
+            }
+            //all ok..
+            mSchProp = mSchProp[mKey1];
+
+
+            //rndr..
+            let mRndr = {
+              "utils": {
+                "dataType": {
+                  "number": {
+                    "set": (mE, mProp) => {
+                      let mK1 = "maximum";
+                      let mK2 = "minimum";
+                      //set.....
+                      if (mProp.hasOwnProperty(mK1)==true) {
+                        if (mProp[mK1]<parseFloat(mE.value)) {
+                           //reset..
+                           mE.value = mProp[mK1];
+                           return;
+                        }
+                      }
+                      if (mProp.hasOwnProperty(mK2)==true) {
+                        if (mProp[mK2]>parseFloat(mE.value)) {
+                           //reset..
+                           mE.value = mProp[mK2]; //mProp[mK2]; || "";
+                           return;
+                        }
+                      }
+                    }
+                  },
+                  "string": {
+                    "set": (mE, mProp) => {
+                      let mK1 = "maxLength";
+                      let mK2 = "minLength"; 
+                      //set.....
+                      if (mProp.hasOwnProperty(mK1)==true) {
+                        //overwrite..
+                        mE[mK1] = mProp[mK1];  //ELEM.maxLength
+                        //set..
+                        if (mProp[mK1]<mE.value.length) {
+                           //reset..
+                           mE.value = mE.value.slice(0, -1); //eg=> Helloo => Hello
+                           return;
+                        }
+                      }
+                      /*if (mProp.hasOwnProperty(mK2)==true) {
+                        if (mProp[mK2]>mE.value.length) {
+                           //reset..
+                           mE.value = "";
+                           return;
+                        }
+                      }*/
+
+                    }
+                  },
+                  "integer": {
+                    "set": (mE, mProp) => {
+                      let mK1 = "maximum";
+                      let mK2 = "minimum";
+                      //set.....
+                      if (mProp.hasOwnProperty(mK1)==true) {
+                        if (mProp[mK1]<parseInt(mE.value)) {
+                           //reset..
+                           mE.value = mProp[mK1];
+                           return;
+                        }
+                      }
+                      if (mProp.hasOwnProperty(mK2)==true) {
+                        if (mProp[mK2]>parseInt(mE.value)) {
+                           //reset..
+                           mE.value = mProp[mK2]; //mProp[mK2]; || "";
+                           return;
+                        }
+                      }
+                    }
+                  },
+                }
+              },
+               "l": {
+                  "input": {
+                    "set": (mElemDta={}) => {
+                      let mInputE = mElemDta["mInputE"]; 
+                      //events..
+                      mInputE.addEventListener("input", () => {
+                        /*console.log(`====oninput====`);
+                        console.log(mSchProp);*/
+                        //set..
+                        if (mSchProp.hasOwnProperty("type")) {
+                            if (mRndr["utils"]["dataType"].hasOwnProperty(mSchProp["type"])) {
+                              mRndr["utils"]["dataType"][mSchProp["type"]]
+                              .set(mInputE, mSchProp);
+                            }
+                        }
+
+                      }, true); 
+
+                    }
+                  }
+               }
+            };
+
+            //set (fld)..
+            if (mRndr["l"].hasOwnProperty(mCurrDta1["type"])==true) {
+              mRndr["l"][mCurrDta1["type"]]
+              .set(mCurrDta1["mElemDta"]);
+            }
+
+
+          /*
+          --USAGE--
+          //------mSchValiRulesOnUI-----//
+          core_1mn["mForm"]["mUtil"].mSchValiRulesOnUI
+          .set(mCurrDta1, mSchemaJSON);
+
+          */
+        }
       }
+
 
     },
 
@@ -5247,11 +5413,19 @@ var mBtn = core_1mn['btn']['4'].set({
 
       "hide": true, //(default (false)) [if=>true then (not viewable)] [if=>false then (viewable)]
 
+      //pass flags (supported by fields) inside array //refer to field for flags value
+      "flags": [] //eg => User will not be able to do these actions
+                               
+
        //-----events-------//
       "events": {
           "hide": () => {},
           "show": () => {},
+          "click": () => {}
       },
+
+      //-----(IMPORTANT)Note----//
+      [input] => [$YOUR_SCHEMA.PROP.default] (value) will be set.. if data is (EMPTY||Not Provided by User)
 
 
       */
@@ -5259,7 +5433,7 @@ var mBtn = core_1mn['btn']['4'].set({
       //Normal Text Entry (Field)
       "input": {
 
-      "set": (mFormDiv, mCurrDta1, mG_cover) => {
+      "set": (mFormDiv, mCurrDta1, mG_cover, mSchemaJSON) => {
           /*
           USAGE
                          {
@@ -5271,6 +5445,8 @@ var mBtn = core_1mn['btn']['4'].set({
                             "endIco": "eye_0.svg", //"info_0.svg",
                             "autocomplete": false,
                             "label": "Password",
+                            "s_label": "Rs:",
+                            "e_label": "Rs:",
 
                             //cb..
                             "cb": {
@@ -5373,7 +5549,7 @@ var mBtn = core_1mn['btn']['4'].set({
              }
           };
         
-          
+          //label..
           if(mCurrDta1.hasOwnProperty("label")==true){
             //mTopLabelDiv......
             var mTopLabelDiv = document.createElement("div");
@@ -5382,10 +5558,10 @@ var mBtn = core_1mn['btn']['4'].set({
             mTopLabelDiv.style.fontSize = "1.2vh";
             mTopLabelDiv.style.color = "rgba(34,34,34, 0.6)";
             mDivRoot.appendChild(mTopLabelDiv);
-
           }
 
 
+          //mDiv..
           var mDiv = document.createElement("div");
           mDiv.style.width = mCurrDta1['w']!=undefined ? mCurrDta1['w'] : "100%"; //100%
           mDiv.style.height = mCurrDta1['h']!=undefined ? mCurrDta1['h'] : "4.0vh"; //5vh
@@ -5400,6 +5576,24 @@ var mBtn = core_1mn['btn']['4'].set({
             mDiv.style.borderRadius = "0.3vh";
           }
           mDivRoot.appendChild(mDiv);
+
+
+          //prefix..(label)
+          let mPrefix_label = (mE) => {
+            //label_s..
+            let mK = "s_label";
+            if(mCurrDta1.hasOwnProperty(mK)==true){
+              var mLabel = document.createElement("div");
+              mLabel.innerHTML = mCurrDta1[mK];
+              mLabel.style.padding = "0.5vw";
+              mLabel.style.textAlign = "start";
+              mLabel.style.fontSize = "1.4vh";
+              mLabel.style.color = "rgba(34,34,34, 0.6)";
+              mE.appendChild(mLabel);
+            } 
+          };
+          mPrefix_label(mDiv);
+
 
           //input....
           var mInput = document.createElement("input");
@@ -5427,8 +5621,6 @@ var mBtn = core_1mn['btn']['4'].set({
           mInput.autocomplete = mCurrDta1['autocomplete'];
           mDiv.appendChild(mInput);
 
-
-
           //events....
           mInput.onfocus = function(){
             var mCurrItemId = this.id;
@@ -5454,6 +5646,25 @@ var mBtn = core_1mn['btn']['4'].set({
               "0": mInput.value
             });
           };
+
+
+          //suffix..(label)
+          let mSuffix_label = (mE) => {
+            //label_s..
+            let mK = "e_label";
+            if(mCurrDta1.hasOwnProperty(mK)==true){
+              var mLabel = document.createElement("div");
+              mLabel.innerHTML = mCurrDta1[mK];
+              mLabel.style.padding = "0.5vw";
+              mLabel.style.textAlign = "start";
+              mLabel.style.fontSize = "1.4vh";
+              mLabel.style.color = "rgba(34,34,34, 0.6)";
+              mE.appendChild(mLabel);
+            } 
+          };
+          mSuffix_label(mDiv);
+
+
 
 
 
@@ -5553,6 +5764,13 @@ var mBtn = core_1mn['btn']['4'].set({
             "mInputE": mInput
           };
 
+          //------mSchValiRulesOnUI-----//
+          if (Object.keys(mSchemaJSON).length>0) {
+          core_1mn["mForm"]["mUtil"].mSchValiRulesOnUI
+          .set(mCurrDta1, mSchemaJSON);             
+          }
+          
+
 
 
           }
@@ -5583,7 +5801,16 @@ var mBtn = core_1mn['btn']['4'].set({
           //--mUtil--//
           const mAutoSetDataType = core_1mn["mForm"]["mUtil"].mAutoSetDataType;
           //--Auto set (datatype) of input value--//
-          mInputVal = mAutoSetDataType.set(mInputE);
+          let mKey = Object.keys(mUsrData)[0];
+          let mDefVal = undefined;
+          if (mSchema["properties"].hasOwnProperty(mKey)) {
+            if (mSchema["properties"][mKey].hasOwnProperty("default")) {
+               mDefVal = mSchema["properties"][mKey]["default"];
+            }
+          }
+          /*console.log(`==mDefVal==`);
+          console.log(mDefVal);*/
+          mInputVal = mAutoSetDataType.set(mInputE, mDefVal);
           
           //store (JSON)....
           mAddDtaIn_JSON(0, mInputVal); //mInputE.value
@@ -5634,7 +5861,7 @@ var mBtn = core_1mn['btn']['4'].set({
       //Normal File Entry (Field)
       "file": {
 
-        "set": (mFormDiv, mCurrDta1, mCover) => {
+        "set": (mFormDiv, mCurrDta1, mCover, mSchemaJSON) => {
             /*
             USAGE
               {
@@ -5668,11 +5895,18 @@ var mBtn = core_1mn['btn']['4'].set({
 
 
                                     //cb..
-                                    "cb": {
-                                        "onLoadTotalFiles": function(data){
+                                    "cb": { 
+                                        "onLoadTotalFiles": function(data){    //Note: You need to call (getTotalFiles() to get this cb)
                                           //var files_list = data['files_list']; //files_list
                                           //console.log(files_list);
+                                        },
+
+                                        "onPick": (data) => {
+                                            let file = data["file"];
+                                            console.log(file);
                                         }
+                                        
+
                                     },
 
                                     //--Events--//
@@ -6192,6 +6426,12 @@ var mBtn = core_1mn['btn']['4'].set({
 
                     }
                 }
+              });
+
+
+               //send (cb)..
+               mSend_cb("onPick", {
+                "file": file
                });
 
 
@@ -6333,7 +6573,7 @@ var mBtn = core_1mn['btn']['4'].set({
       //Dropdown Entry (Field)
       "dropdown": {
 
-       "set": (mFormDiv, mCurrDta1, mG_cover) => {
+       "set": (mFormDiv, mCurrDta1, mG_cover, mSchemaJSON) => {
 
             /*
               --USAGE--
@@ -6430,6 +6670,12 @@ var mBtn = core_1mn['btn']['4'].set({
                                 },
                                 "onClick": () => {
                                     alert();
+                                },
+                                "onUnPick": function(data){
+                                    var m0 = data['0']; //item index
+                                    var m1 = data['1']; //item
+                                    console.log(m0);
+                                    console.log(m1);
                                 }
                             },
 
@@ -6582,6 +6828,15 @@ var mBtn = core_1mn['btn']['4'].set({
         }
         mDivRoot.appendChild(mDiv);
 
+        //check & set..
+        if (mCurrDta1.hasOwnProperty("w")) {
+          if (parseInt(mCurrDta1['w'])==0) {
+              //need to hide..
+              mDiv.style.visibility = "hidden";
+          }
+        }
+
+
 
         //----CHECK and SET (sel_item_idx)----//
        //Specify [itemArr (key)] you want to (SELECT item [Index] by that key) in ($mUsrData[YOUR_KEY])
@@ -6714,7 +6969,7 @@ var mBtn = core_1mn['btn']['4'].set({
                      mInput.onclick = function(e){
                         mInputClc(e);
                      };
-                     function mInputClc(e) {
+                     function mInputClc(e=null) {
                       //send cb..
                       mSend_cb("onClick", {});
                       if (mCurrDta1["readonly"]!=undefined) {
@@ -6726,7 +6981,9 @@ var mBtn = core_1mn['btn']['4'].set({
 
                       //var mCurrItemId = this.id; //OLD
                       var mCurrItemId = mInput.id; //NEW
-                      e.stopPropagation();
+                      if (e!=null) {
+                      e.stopPropagation();                        
+                      }
                       var mCurrItem = document.getElementById(mCurrItemId);
                       var mDropdownID = mCurrItem.getAttribute("dropdownID");
                       var mDropdown = document.getElementById(mDropdownID);
@@ -6756,14 +7013,17 @@ var mBtn = core_1mn['btn']['4'].set({
                          mDropdown.style.display = "block";
                         }
                       }else{
-                          mDropdown.style.display = "none";                            
+                        mDropdown.style.display = "none";                            
                       }
 
 
                        //events.....
                        window.onclick = function() {
                         if(mDropdown.style.display == "block"){
-                            mDropdown.style.display = "none";                        
+                          //mDropdown.style.display = "none";   //--OLD--                            
+                          if (e!=null) { //--NEW--  
+                          mDropdown.style.display = "none";                               
+                          }                     
                         }
                       }; 
                       
@@ -6771,6 +7031,15 @@ var mBtn = core_1mn['btn']['4'].set({
 
                      mDiv.appendChild(mInput);
 
+                     //-------events------//
+                     if (mCurrDta1["events"]!=undefined) {
+                      if (mCurrDta1["events"].hasOwnProperty("click")==true) {
+                         //click..
+                         mCurrDta1["events"]["click"] = () => {
+                          mInputClc(null);
+                        } 
+                      } 
+                     }  
 
 
 
@@ -6911,7 +7180,7 @@ var mBtn = core_1mn['btn']['4'].set({
          //mSearch cov..
          let mSearch_cov = document.createElement("div");
          mChoiceDiv.appendChild(mSearch_cov);
-
+         
 
          //mChoiceItems..
          let mChoiceItems = document.createElement("div");
@@ -6919,6 +7188,64 @@ var mBtn = core_1mn['btn']['4'].set({
          mChoiceItems.style.minHeight = "0";
          mChoiceItems.style.maxHeight = mCurrDta1_dd0["6"]!=undefined?mCurrDta1_dd0["6"] : "20vh";
          mChoiceDiv.appendChild(mChoiceItems);
+
+
+
+         //mAct cov..
+         let mAct_cov = document.createElement("div");
+         mChoiceDiv.appendChild(mAct_cov);
+         //events..
+         mAct_cov.onclick = (e) => {
+          e.stopPropagation(); 
+         };
+         //set..
+         let mSet_actCov = (mE) => {
+             mE.style.padding = "0.4vh 0.4vw";
+             mE.style.display = "flex";
+             mE.style.justifyContent = "end";
+             //set vars..
+             let mSelAll = false;
+             //set..
+             let mBtn = document.createElement("div");
+             mBtn.innerHTML = "Select All";
+             mBtn.style.fontSize = "1.3vh";
+             mBtn.style.height = "1.2vh";
+             mBtn.style.color = "rgba(14,112,205, 1.0)";
+             mBtn.style.borderBottom = `0.2vh solid ${mBtn.style.color}`;
+             mE.appendChild(mBtn);
+             //events..
+             mBtn.onclick = () => {
+                let a = mCurrDta1["dropdown"]["itemArr"];
+                for (let i = 0; i < a.length; i++) {
+                  const e = a[i];
+                  let mItem = e["mArr_cbox1"]["events"]; 
+                  if (mSelAll==true) {
+                     //switch to unselect-all..
+                     if (mItem["isTick"]==true) {
+                         mItem["e"].click(); //un-tick
+                     }
+                  }else {
+                    //switch to select-all..
+                    if (mItem["isTick"]==false) {
+                      mItem["e"].click(); //tick
+                    }
+                  }
+                }
+
+                //all ok..
+                if (mSelAll==true) {
+                  mSelAll=false;
+                  mBtn.innerHTML = "Select All";
+                }else {
+                  mSelAll=true;
+                  mBtn.innerHTML = "Reset";
+                }
+             }; 
+         };
+         if (mInput.getAttribute("sel_item_idx").includes("[")==true) {
+          //multi-sel (found)
+          mSet_actCov(mAct_cov);
+         }
 
 
          /*
@@ -6991,6 +7318,7 @@ var mBtn = core_1mn['btn']['4'].set({
 
             "mUtils": {
               "chip": (idx) => {
+                //set..
                 var mDiv = document.createElement("div");
                 mDiv.setAttribute("dd_item_idx", idx);
                 mDiv.setAttribute("cover_type", "chip");
@@ -6999,6 +7327,7 @@ var mBtn = core_1mn['btn']['4'].set({
                 mDiv.style.padding = "0.5vh 0.5vw";
                 mDiv.style.margin = "0.3vh 0.2vw";
                 mDiv.style.color = mCurrDta1['txt']['0']!=undefined ? mCurrDta1['txt']['0'] : "#343434";
+
                 return mDiv;
               }
             },
@@ -7007,7 +7336,10 @@ var mBtn = core_1mn['btn']['4'].set({
               if(mKey.hasOwnProperty("txt1")==true){
                 //check if key available if array.....
                 if(mItem_Arr[mItemIndex].hasOwnProperty(mKey['txt1'])==true){
-                    var mChip_ARR = mInput.querySelectorAll(`[cover_type="chip"]`);           
+                    //set vars..
+                    let mChipKey = `[cover_type="chip"]`;
+                    //set..
+                    var mChip_ARR = mInput.querySelectorAll(`${mChipKey}`);           
                     if (mChip_ARR.length==0 && mInput.getAttribute("sel_item_idx").includes("[")==false) {
                         mInput.innerHTML = mItem_Arr[mItemIndex][mKey['txt1']];
                         mInput.style.color = mCurrDta1['txt']['0']!=undefined ? mCurrDta1['txt']['0'] : "#343434";
@@ -7037,6 +7369,59 @@ var mBtn = core_1mn['btn']['4'].set({
                          } 
 
                       }
+ 
+
+                      //handle multi-chip..
+                      let mHndl_multiChip = (k, mE) => {
+                        let m0 = 2; //max no. of chips viewable..
+                        let mChipArr = mE.querySelectorAll(`${k}`);
+                        let mNoOfChipHide = 0;
+                        //set..
+                        let a = mChipArr;
+                        for (let i = 0; i < a.length; i++) {
+                          const e = a[i];
+
+                          //first-visible..
+                          e.style.display = "block";
+
+                          //set..
+                          if (i >= m0) {
+                            e.style.display = "none";
+                            mNoOfChipHide+=1;
+                          }
+                          //console.log(e);
+                        }
+                        //all ok..
+                        let mLabel = (mE) => {
+                          let mK = `[lbl_cover_chip_count="true"]`;
+                          //remove if already exists..
+                          if (mE.querySelector(`${mK}`)!=null) {
+                            mE.querySelector(`${mK}`).remove();
+                          }
+
+                          //check..
+                          if (mNoOfChipHide==0) {
+                            return; //stop..
+                          }
+                          //all ok..
+
+                          //set..
+                          let mLbl = document.createElement("div");
+                          mLbl.setAttribute("lbl_cover_chip_count", "true");
+                          mLbl.innerHTML = `+${mNoOfChipHide} more`;
+                          //style..
+                          mLbl.style.padding = "0 0.3vw";
+                          mE.appendChild(mLbl);
+
+                        };
+                        mLabel(mE);
+
+
+                      };
+                      mHndl_multiChip(mChipKey, mInput);
+
+
+
                       
                     }
                 }
@@ -7125,6 +7510,9 @@ var mBtn = core_1mn['btn']['4'].set({
               mSelNew_arr.splice(mSelNew_arr.indexOf(` ${mItemIndex} `), 1);
               //set..
               mInput.setAttribute("sel_item_idx", `[${mSelNew_arr.toString()}]` );
+              //send callback..
+              mSend_cb("onUnPick", {"0":mItemIndex, "1": mItem_Arr[mItemIndex]});
+
               if (typeof mItemIndex == "number") {
                 //pick..
                 mSel_fld["txt1"](mItemIndex, true);
@@ -7176,18 +7564,24 @@ var mBtn = core_1mn['btn']['4'].set({
               mDixHori.style.height = "100%";
               mDixHori.style.display = "flex";
               mDixHori.style.alignItems = "center";
+              mDixHori.style.justifyContent = "space-between";
               mDixHori.style.padding = "0 1vw";
               mItem.appendChild(mDixHori);
 
+              //Left-Item..
+              let mLftI = document.createElement("div");
+              mLftI.style.display = "flex";
+              mLftI.style.alignItems = "center";
+              mDixHori.appendChild(mLftI);
               
 
               if(mKey.hasOwnProperty("ico1")==true){
                //check if key available if array.....
                if(mCurrDta.hasOwnProperty(mKey['ico1'])==true){
-                 mSet_ico1();
+                 mSet_ico1(mLftI);
                }
               }
-              function mSet_ico1() {  
+              function mSet_ico1(mDixHori) {  
                 //set svg....
                 core_1mn['mSvg'].set({
                   "0":  mCurrDta[mKey['ico1']], //"list_0.svg",
@@ -7219,10 +7613,10 @@ var mBtn = core_1mn['btn']['4'].set({
               if(mKey.hasOwnProperty("cbox1")==true){
                 //check if key available if array.....
                 if(mCurrDta.hasOwnProperty(mKey['cbox1'])==true){
-                  mSet_cbox1();
+                  mSet_cbox1(mLftI);
                 }
                }
-               function mSet_cbox1() {  
+               function mSet_cbox1(mDixHori) {  
                  //set checkbox....
                  //mCurrDta[mKey['cbox1']]
                  /*
@@ -7261,13 +7655,14 @@ var mBtn = core_1mn['btn']['4'].set({
                }
 
 
+               //txt1
               if(mKey.hasOwnProperty("txt1")==true){
                 //check if key available if array.....
                 if(mCurrDta.hasOwnProperty(mKey['txt1'])==true){
-                 mSet_txt1();
+                 mSet_txt1(mLftI);
                }
               }
-              function mSet_txt1() {
+              function mSet_txt1(mDixHori) {
                   var mDiv = document.createElement("div");
                   mDixHori.appendChild(mDiv);
 
@@ -7283,13 +7678,20 @@ var mBtn = core_1mn['btn']['4'].set({
               }
 
 
+              //Right-Item..
+              let mRhtI = document.createElement("div");
+              mRhtI.style.display = "flex";
+              mRhtI.style.alignItems = "center";
+              mDixHori.appendChild(mRhtI);
+              
+              //etxt1
               if(mKey.hasOwnProperty("etxt1")==true){
                 //check if key available if array.....
                 if(mCurrDta.hasOwnProperty(mKey['etxt1'])==true){
-                 mSet_etxt1();
+                 mSet_etxt1(mRhtI);
                }
               }
-              function mSet_etxt1() {
+              function mSet_etxt1(mDixHori) {
                   var mDiv = document.createElement("div");
                   mDixHori.appendChild(mDiv);
 
@@ -7323,6 +7725,44 @@ var mBtn = core_1mn['btn']['4'].set({
                   mCurrDta1['dropdown']['itemArr'][i1][mKey['etxt1']] = mETxt;
 
               }
+
+
+
+              /*//switch1..
+              if(mKey.hasOwnProperty("cbox1")==true){
+                //check if key available if array.....
+                if(mCurrDta.hasOwnProperty(mKey['cbox1'])==true){
+                  mSet_switch1();
+                }
+               }
+               function mSet_switch1() {  
+                 //set checkbox....
+                 //mCurrDta[mKey['cbox1']] 
+                 //--NEW--//
+                 let mEvents = null;
+                 if (mCurrDta1['dropdown']["itemArr"][i1]["mArr_cbox1"]==null) {
+                  //mDixHori
+                  mEvents = core_1mn["mForm"]["mUtil"]["checkbox"].get();
+                  mDixHori.appendChild(mEvents["e"]);
+                  //store..
+                  mCurrDta1['dropdown']["itemArr"][i1]["mArr_cbox1"] = {
+                   "events": mEvents
+                  };
+                 }else {
+                  mEvents = mCurrDta1['dropdown']["itemArr"][i1]["mArr_cbox1"]["events"];
+                  mDixHori.appendChild(mEvents["e"]); 
+                 }
+                 if (mEvents.isTick==true) {
+                  mEvents.tick();
+                 }else {
+                  mEvents.untick();
+                 }
+
+               }*/
+
+
+
+
 
 
            }
@@ -7395,6 +7835,9 @@ var mBtn = core_1mn['btn']['4'].set({
           || mCurrDta1['dropdown']["itemArr"].length>4
           ) {
 
+          //set style..(mSearch)
+          mSearch_cov.style.borderBottom = `1px solid ${core_1mn["sep"].set({})["bg"]}`;
+
           //search-UI-//
           let mFld = document.createElement("input");
           mFld.style.width = "95%";
@@ -7461,8 +7904,7 @@ var mBtn = core_1mn['btn']['4'].set({
         mCurrDta1['mElemDta'] = {
           "mTooltip": mTooltip,
           "mInputE": mInput
-        };
-
+        }; 
         
 
         };
@@ -7732,7 +8174,7 @@ var mBtn = core_1mn['btn']['4'].set({
       //Date Picker (Field)
       "datepckr": {
 
-        "set": (mFormDiv, mCurrDta1, mCover) => {
+        "set": (mFormDiv, mCurrDta1, mCover, mSchemaJSON) => {
             /*
             USAGE
                 {
@@ -8863,7 +9305,7 @@ tbl.appendChild(row); // appending each row into calendar body.
       //Time Picker (Field)
       "timepckr": {
 
-        "set": (mFormDiv, mCurrDta1, mCover) => {
+        "set": (mFormDiv, mCurrDta1, mCover, mSchemaJSON) => {
           //ref..
           //https://docs.oracle.com/cd/E41183_01/DR/Time_Formats.html
           //https://m3.material.io/components/time-pickers/overview
@@ -9731,12 +10173,10 @@ tbl.appendChild(row); // appending each row into calendar body.
 
       },
 
-
-
       //Checkbox (Field)
       "cbox": {
 
-        "set": (mFormDiv, mCurrDta1, mG_cover) => {
+        "set": (mFormDiv, mCurrDta1, mG_cover, mSchemaJSON) => {
             /*
             USAGE
                            {
@@ -9746,12 +10186,16 @@ tbl.appendChild(row); // appending each row into calendar body.
                               "$mUsrData": {
                                   "mCbox1": false,
                               },
+                              "flags":
+                               //eg => User will not be able to do these actions
+                               [], //Expected values = ["untick::disable", "tick::disable"]
   
                               "$mLogic": {
                                   "mMatchWith": [
                                       "mName",
                                   ]
                               },
+
 
                               //cb..
                               "cb": {
@@ -9765,6 +10209,12 @@ tbl.appendChild(row); // appending each row into calendar body.
                           },
             */
   
+            //set vars..
+            if (mCurrDta1.hasOwnProperty("flags")==false) {
+              mCurrDta1["flags"] = []; //create empty
+            }              
+
+            //set..
             var mDivRoot = document.createElement("div");
             //mDivRoot.style.width = "100%";
             mDivRoot.style.position = "relative";
@@ -9821,17 +10271,28 @@ tbl.appendChild(row); // appending each row into calendar body.
             //mDiv.style.paddingRight = "0.5vw";
             mDivRoot.appendChild(mDiv);
             //events..
-            mDiv.onclick = () => {
+            let mClc_mDiv = () => {
               if (mEvents["e"].getAttribute("m_tick")=="false") {
-                  mEvents.tick();
-                  //send cb..
-                  mSend_cb("onTick", {});
+                mEvents.tick();
+                //send cb..
+                mSend_cb("onTick", {});
               }else {
-                  mEvents.untick();
-                  //send cb..
-                  mSend_cb("onUnTick", {});
+              //check..
+              if (mCurrDta1["flags"].indexOf("untick::disable")!==-1) {
+                console.log(`via [onClick]..disabled because of [flags=untick::disable]`);
+                return; //stop
               }
+              //all ok..
+              mEvents.untick();
+              //send cb..
+              mSend_cb("onUnTick", {});
+
+             }
             };
+            mDiv.onclick = () => {
+              mClc_mDiv();
+            };
+
             
   
             //input....
@@ -9937,7 +10398,150 @@ tbl.appendChild(row); // appending each row into calendar body.
   
          
   
-      },  
+      },
+
+
+      //Any custom code [create fld with your custom code]
+      //Note: we will add more features in future..
+      "custom": {
+
+        "set": (mFormDiv, mCurrDta1, mG_cover, mSchemaJSON) => {
+            /*
+            USAGE
+                           {
+                              "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                              "type": "custom",
+                              "w": "10vh",  //width
+                              "h": "5vh",   //height
+                              "xcode": {   //xcode..by using it you can pass your existing code (see => @xcode [For more info])
+                                "html": ``, //Your html code
+                                "css": ``,  //Your css code
+                                "js": ``,  //Your js code
+                                "dom": () => {return DOM;} || DOM, //Your DOM eg => document.createElement("div")
+                              },
+
+                              "$mUsrData": {
+                                "YOUR_JSON_KEY": "", //you can return this value..and build a payload (auto) with our [Form System]
+                              },
+
+                            },
+
+            */
+
+            //set vars..
+            if (mCurrDta1.hasOwnProperty("xcode")==false) {
+                throw `err: [xcode] is required`;
+            }
+            //all ok..        
+           
+  
+  
+            //reload..
+            if (mCurrDta1["reload"]!=undefined) {
+              mCurrDta1["reload"] = () => {
+                 mStartE();
+              }
+            }      
+            //start elem..        
+            let mDivRoot = document.createElement("div");
+            //mDivRoot.style.width = "100%"; //100%  (deprecated)
+            //mDivRoot.style.margin = "1vh 0";
+            mDivRoot.style.position = "relative";
+            mFormDiv.appendChild(mDivRoot);
+  
+            //check (hide)..
+            if (mCurrDta1.hasOwnProperty("hide")==true) {
+              if (mCurrDta1["hide"]==true) {
+                  mDivRoot.style.display = "none";
+              }
+            }
+  
+  
+             //-------events------//
+             if (mCurrDta1["events"]!=undefined) {
+              if (mCurrDta1["events"].hasOwnProperty("hide")==true) {
+                 //hide..
+                 mCurrDta1["events"]["hide"] = () => {
+                  mDivRoot.style.display = "none";
+                } 
+              } 
+              if (mCurrDta1["events"].hasOwnProperty("show")==true) {
+                //show..
+                mCurrDta1["events"]["show"] = () => {
+                 mDivRoot.style.display = "block";
+               } 
+             } 
+             }
+  
+  
+             //mStartE..
+            const mStartE = () => {
+              mDivRoot.innerHTML = ""; //reset..  
+  
+  
+            //mDiv..
+            let mDiv = document.createElement("div");
+            mDiv.style.width = mCurrDta1['w']!=undefined ? mCurrDta1['w'] : "100%"; //100%
+            mDiv.style.height = mCurrDta1['h']!=undefined ? mCurrDta1['h'] : "4.0vh"; //5vh
+            //mDiv.style.margin = "1vh 0";
+            //mDiv.style.backgroundColor = "#f2f2f2";
+            mDiv.style.display = "flex";
+            mDiv.style.alignItems = "center";
+            mDivRoot.appendChild(mDiv);
+   
+            //input....
+            let mInput = document.createElement("div");
+            mInput.id = mCurrDta1['elementID'];
+            mDiv.appendChild(mInput);
+
+
+            //set..
+            let mSet_l = (mE, mXcode) => {
+              //set vars..
+              let mRndr = {
+                "utils": {},
+                "l": {
+                  "dom": {
+                    "set": (mV) => {
+                      //set vars..
+                      let mDom = mV();
+                      //set..
+                      mE.appendChild(mDom);
+                    }
+                  }
+                }
+              };
+
+              //check and set..
+              if (mXcode.hasOwnProperty("dom")) {
+                if (typeof mXcode["dom"] === "function") {
+                  mRndr.l.dom.set(mXcode["dom"]);
+                }
+              }
+
+            };
+            mSet_l(mInput, mCurrDta1["xcode"]);
+                         
+  
+             
+  
+            //--Note: Currenty we are not using it..But in future we will apply all Validations rules--//
+            //****store (elements)
+            mCurrDta1['mElemDta'] = {
+              "mTooltip": null, //mTooltip
+              "mInputE": mInput
+            };
+          
+  
+  
+            }
+            mStartE();
+  
+        },
+  
+         
+  
+      },
 
 
 
@@ -9961,6 +10565,12 @@ tbl.appendChild(row); // appending each row into calendar body.
         //mReadonly..
         let mReadonly = mParams["readonly"]!=undefined?mParams["readonly"]:false;
         //console.log( mReadonly);
+
+
+        //mSchema..(JSON-Schema)
+        let mSchemaJSON = mParams["schema"]!=undefined ? mParams["schema"] : {};
+        /*console.log(`=====mForm.mB.schema=====`);
+        console.log(mSchemaJSON);*/
 
 
         //set vars......
@@ -10117,7 +10727,7 @@ tbl.appendChild(row); // appending each row into calendar body.
 
             //all ok....
             //valid....
-            core_1mn['mForm']['mR'][mType].set(mElemHolder, mCurrI, mCover);
+            core_1mn['mForm']['mR'][mType].set(mElemHolder, mCurrI, mCover, mSchemaJSON);
 
             //check.. [if element is hide]
             let mIsElemHide = () => {
@@ -10228,7 +10838,11 @@ tbl.appendChild(row); // appending each row into calendar body.
                                 var mParams = mGetParams;
                                 console.log(mParams);
                             },
-                        }
+                        },
+
+                        //schema..[JSON-Schema] (Can we used for --Auto Implement validation Rules on UI fields [Real-Time]--)
+                        "schema": mSchema
+
                      };
                      core_1mn['mForm']['mB'].set(mFormBuilder);*/
         
@@ -10252,16 +10866,26 @@ tbl.appendChild(row); // appending each row into calendar body.
 
         //filter (mFormPayload)..
         const mFilter_FP = (mArr1) => {
+          //gen
           for (let i1 = 0; i1 < mArr1.length; i1++) {
             const mCurrDta1 = mArr1[i1];
             //console.log(mCurrDta1);
+            //console.log(JSON.stringify(mCurrDta1["$mUsrData"], null, 2));
+
+            //disable..[custom]
+            if (mCurrDta1["type"]=="custom") {
+               console.warn(`Vali..not implemented for [type=custom], so we are skipping..`);
+               mFormPayload.splice(i1, 1);
+            }
+
+
             //remove (if)..
             if (mCurrDta1["$mUsrDataCONF"]!=undefined) {
               if (mCurrDta1["$mUsrDataCONF"]["returnDta"]!=undefined) {
                 if (mCurrDta1["$mUsrDataCONF"]["returnDta"]==false) {
                     //(remove) no need to store.. [if=>false ($mUsrData) will not return data]
                     mFormPayload.splice(i1, 1);
-                    return;
+                    //return;  //----Need to test-----//  --OLD-- (return)
                 }
               }
             }
@@ -11983,8 +12607,8 @@ tbl.appendChild(row); // appending each row into calendar body.
    },
 
 
-   //Separator
-   "sep": {
+  //Separator
+  "sep": {
     "conf": [ //configuration..
     {
       "name": "DEFAULT",
@@ -12038,6 +12662,204 @@ tbl.appendChild(row); // appending each row into calendar body.
     }
 
   },
+
+
+
+  //Snackbar / Toast
+  "toast": {
+    "conf": [ //configuration..
+    {
+      "name": "DEFAULT",
+      "0": "#333" //rgba(201,192,192, 1)
+    },
+    {
+      "name": "LIGHT",
+      "0": "rgba(201,192,192, 0.5)"
+    }, 
+
+    ],
+    "1": {
+    "set": (mGetParams={"w":"","h":"","typ":0, 
+    "txt1":{
+      "v": "", //text
+      "c": "", //color
+      "fs": "", //font-size
+    }, "svg1":{
+      "v": "", //svg
+      "c": "", //color
+      "w": "", //width
+      "h": "", //height
+    } } ) => {
+      var mParams = mGetParams;
+      var mW = mParams['w']!=undefined ? mParams['w'] : "20vw"; //100%
+      var mH = mParams['h']!=undefined ? mParams['h'] : "4vh"; //100%
+      var mTyp = mParams['typ']!=undefined ? mParams['typ'] : 0; //type ["DEFAULT", "LIGHT"]
+      var mE1 = document.body; //mParams['e1']; //@req
+      let mTxt1 = mParams['txt1']!=undefined ? mParams['txt1'] : {
+        "v": "", //text
+        "c": "#fff", //color
+        "fs": "1.6vh", //font-size
+      }; 
+      let mSvg1 = mParams['svg1']!=undefined ? mParams['svg1'] : {
+        "v": "", //svg
+        "c": "#fff", //color
+        "w": "1.5vh", //width
+        "h": "1.5vh", //height
+      };
+
+      //https://www.w3schools.com/howto/howto_js_snackbar.asp
+      //set css..
+      let mCssID = "mn-snackbar-css";
+      let mID1 = "snackbar";
+      let mSet_css = (mID, mID1) => {
+        let css = `
+        /* The snackbar - position it at the bottom and in the middle of the screen */
+        #${mID1} {
+          visibility: hidden; /* Hidden by default. Visible on click */
+          min-width: 250px; /* Set a default minimum width */
+          margin-left: -125px; /* Divide value of min-width by 2 */
+          background-color: #333;  /* Black background color */
+          color: #fff; /* White text color */
+          text-align: center; /* Centered text */
+          border-radius: 2px; /* Rounded borders */
+          padding: 16px; /* Padding */
+          position: fixed; /* Sit on top of the screen */
+          z-index: 1; /* Add a z-index if needed */
+          left: 50%; /* Center the snackbar */
+          bottom: 30px; /* 30px from the bottom */
+        }
+        
+        /* Show the snackbar when clicking on a button (class added with JavaScript) */
+        #${mID1}.show {
+          visibility: visible; /* Show the snackbar */
+          /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+          However, delay the fade out process for 2.5 seconds */
+          -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+          animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        
+        /* Animations to fade the snackbar in and out */
+        @-webkit-keyframes fadein {
+          from {bottom: 0; opacity: 0;}
+          to {bottom: 30px; opacity: 1;}
+        }
+        
+        @keyframes fadein {
+          from {bottom: 0; opacity: 0;}
+          to {bottom: 30px; opacity: 1;}
+        }
+        
+        @-webkit-keyframes fadeout {
+          from {bottom: 30px; opacity: 1;}
+          to {bottom: 0; opacity: 0;}
+        }
+        
+        @keyframes fadeout {
+          from {bottom: 30px; opacity: 1;}
+          to {bottom: 0; opacity: 0;}
+        }  
+        `;
+        if (document.getElementById(mID)==null) {
+         var mE_css = document.createElement("style");
+         mE_css.id = "global-css";
+         mE_css.innerHTML = css;
+         document.head.appendChild(mE_css);
+        }
+      };
+      mSet_css(mCssID, mID1);
+
+
+      //set.....
+      var mT = document.createElement("div");
+      mT.id = mID1;
+      mT.style.width = mW;
+      mT.style.height = mH;
+      //mT.style.backgroundColor = core_1mn["sep"]["conf"][mTyp]["0"];
+      mE1.appendChild(mT);
+
+      //set..
+      let mSet_c = (mE) => {
+        let mC = document.createElement("div");
+        mC.style.display = "flex";
+        mC.style.justifyContent = "center";
+        mC.style.alignItems = "center";
+        mC.style.width = "100%";
+        mC.style.height = "100%";
+        mE.appendChild(mC);
+
+         //svg..
+         let mSet_svg1 = (mE, a) => {
+          core_1mn['mSvg'].set({
+            "0": a["v"],  //svg file name --OR-- <svg></svg>
+            "2": a["w"],
+            "3": a["h"],
+            "4": a["c"], //"rgba(34,34,34, 1.0)",
+            "5": mE,
+            //you can set and (reload) FIELD by (assigning) this func..
+            //"reload": () => {},
+            "cb": { 
+            }
+           });
+         };
+         mSet_svg1(mC, mSvg1);
+
+
+         //Space.....
+         core_1mn['space'].set({
+          "w": "0.3vw",
+          "e1": mC,
+         });
+
+
+         //txt
+         let mSet_txt1 = (mE, a) => {
+           let mTxt = document.createElement("div");
+           mTxt.style.color = a["c"];
+           mTxt.style.fontSize = a["fs"];
+           mTxt.innerHTML = a["v"];
+           mE.appendChild(mTxt);
+         };
+         mSet_txt1(mC, mTxt1);
+        
+
+      };
+      mSet_c(mT);
+
+
+      //test..
+      // Add the "show" class to DIV
+      mT.className = "show";
+      // After 3 seconds, remove the show class from DIV
+      setTimeout(function(){ 
+        mT.className = mT.className.replace("show", "");
+        //mT.remove();
+       }, 3000);
+
+      /*
+      --USAGE--
+      core_1mn["toast"]["1"].set({
+        "svg1": {
+            "v": "search_0.svg",
+            "c": "orange",
+        },
+        "txt1": {
+            "v": res_mn["msg"],
+            "c": "#fff",
+        }
+    });
+    */
+
+    }
+    }
+
+  },
+
+
+
+
+
+
+
 
 
 };

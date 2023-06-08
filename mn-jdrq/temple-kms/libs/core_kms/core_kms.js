@@ -549,6 +549,449 @@ var core_kms = {
        
    },
 
+
+   //dialogs..
+   "dialogs": {
+    "exportDta1": {
+        "name": "Data export popup type 1",
+        "set": (mP={"h0":null, "h1": null}) => {
+            //set vars..
+            let h0 = mP["h0"];
+            let h1 = mP["h1"];
+            //set..
+            let mEvents = core_1mn['dialog']['1'].set(
+                {
+                    //"c1": "my_id_DIALOG",
+                    "h0": h0,
+                    "h1": h1,
+                    "c2": "55%", //width
+                    "c3": "60%", //height
+                    "c6": "rgba(0,32,96, 1)",
+                    "c7": "rgba(255,255,255, 1)",
+                    "mCb": {
+                        "onClose": () => {
+                            //onClose.....
+                            //alert("onClose");
+                        },
+                        "onLoad": (data) => {
+                          var m0 = data['0']; //content holder.....
+                          //mContent.....
+                          var mContent = document.createElement("div");
+                          mContent.style.width = "100%";
+                          mContent.style.height = "62vh"; //100%
+                          mContent.style.overflowY = "auto";
+                          m0.appendChild(mContent);
+
+                          //mPopCover..
+                          let mPopCover = mContent;
+
+                          //set vars..
+                          let dta_ExportData = {
+                          };
+
+                          //default payload.. [Note: datatypes is targeted to Ui fields..so that payload cannot be used directly.]
+                          let def_payload = {
+                            "export_as_pdf": false,
+                            "export_as_excel": true,
+                            "rec_all": false,
+                            "rec_custom": false,
+                            "rec_custom_sd": "",
+                            "rec_custom_ed": ""
+                           };
+           
+
+                          //set..
+                          function mSet_l() {
+    
+                            //Space.....
+                            core_1mn['space'].set({
+                                "h": "2vh",
+                                "e1": mContent,
+                            });
+
+
+                            //set item1..
+                            let mSet_i1 = () => {
+                                var mI = document.createElement("div");
+                                mI.style.width = "100%"; 
+                                //mI.style.height = "100%";
+                                mContent.appendChild(mI);
+
+                                //Space.....
+                                core_1mn['space'].set({
+                                    "h": "3vh",
+                                    "e1": mI,
+                                });
+
+                                //form..
+                                function mForm(mE) {
+                                    var mForm = document.createElement("div");
+                                    mForm.style.width = "100%"; //95%
+                                    mForm.style.display = "flex";
+                                    //mForm.style.backgroundColor = "red";
+                                    mE.appendChild(mForm);
+
+                                    //Space.....
+                                    core_1mn['space'].set({
+                                        "w": "2vw",
+                                        "e1": mForm,
+                                    });
+
+                                    //schema..
+                                    let mSchema = {}; 
+
+                                    //fld..
+                                    let fld_export_as_pdf = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "cbox",
+                                        "label": "PDF",
+                                        "w": "8vw",
+
+                                        "cb": {
+                                            "onTick": () => {
+                                                if (fld_export_as_excel["mElemDta"]["mInputE"]["isTick"]==true) {
+                                                    fld_export_as_excel["mElemDta"]["mInputE"].untick();
+                                                } 
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "export_as_pdf": def_payload.export_as_pdf,
+                                        }, 
+                                    };
+                                    let fld_export_as_excel = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "cbox",
+                                        "label": "Excel",
+                                        "w": "8vw",
+
+                                        "cb": {
+                                            "onTick": () => {
+                                                if (fld_export_as_pdf["mElemDta"]["mInputE"]["isTick"]==true) {
+                                                    fld_export_as_pdf["mElemDta"]["mInputE"].untick();
+                                                } 
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "export_as_excel": def_payload.export_as_excel,
+                                        }, 
+                                    };
+                                    let fld_rec_all = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "cbox",
+                                        "label": "All",
+                                        "w": "8vw",
+
+                                        "flags":
+                                        //eg => User will not be able to do these actions
+                                        ["untick::disable"], //Expected values = ["untick::disable", "tick::disable"]
+
+                                        "cb": {
+                                            "onTick": () => {
+                                                if (fld_rec_custom["mElemDta"]["mInputE"]["isTick"]==true) {
+                                                    fld_rec_custom["mElemDta"]["mInputE"].untick();
+                                                } 
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "rec_all": def_payload.rec_all,
+                                        }, 
+                                    };
+                                    let fld_rec_custom = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "cbox",
+                                        "label": "Custom",
+                                        "w": "6vw", //12vw
+                                        
+                                        "flags": ["untick::disable"],
+
+                                        "cb": {
+                                            "onTick": () => {
+                                                if (fld_rec_all["mElemDta"]["mInputE"]["isTick"]==true) {
+                                                    fld_rec_all["mElemDta"]["mInputE"].untick();
+                                                } 
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "rec_custom": def_payload.rec_custom,
+                                        }, 
+                                    };
+                                    let fld_rec_custom_sd = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "datepckr",
+                                        "dataType": "text",
+                                        "placeholder": "Start date",
+                                        //"label": "Start date",
+                                        "maxLength": 10, //schema_test['properties']['DOB']['maxLength']
+                                        "w": "7.4vw",
+                                        "h": "3.2vh",
+
+                                        /*"endIco": {
+                                            "0": "calendar_1.svg", //"info_0.svg",
+                                            "1": "1.3vh",
+                                            "2": "1.3vh",
+                                            //"3": "rgba(255,255,255,0.7)"
+                                        },*/
+
+                                        "autocomplete": false,
+          
+                                        //--cb--//
+                                        "cb": {
+                                            "onPick": (mV) => {
+                                                let m0 = mV["0"]; //mFinalDT
+                                                let m1 = mV["1"]; //mHumanReadableDT
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "rec_custom_sd": def_payload.rec_custom_sd, //""
+                                        },
+                                         
+                                    };
+                                    let fld_rec_custom_ed = {
+                                        "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                        "type": "datepckr",
+                                        "dataType": "text",
+                                        "placeholder": "End date",
+                                        //"label": "End date",
+                                        "maxLength": 10, //schema_test['properties']['DOB']['maxLength']
+                                        "w": "7.4vw",
+                                        "h": "3.2vh",
+
+                                        /*"endIco": {
+                                            "0": "calendar_1.svg", //"info_0.svg",
+                                            "1": "1.3vh",
+                                            "2": "1.3vh",
+                                            //"3": "rgba(255,255,255,0.7)"
+                                        },*/
+
+                                        "autocomplete": false,
+          
+                                        //--cb--//
+                                        "cb": {
+                                            "onPick": (mV) => {
+                                                let m0 = mV["0"]; //mFinalDT
+                                                let m1 = mV["1"]; //mHumanReadableDT
+                                            }
+                                        },
+
+                                        "$mUsrData": {
+                                            "rec_custom_ed": def_payload.rec_custom_ed, //""
+                                        },
+                                         
+                                    };
+
+                                    //form builder..
+                                    var mFormBuilder = {
+                                        "mArr1": [ 
+    
+                                         {
+                                               "orien": "h",
+                                               "mFieldList": [
+
+                                                {
+                                                    "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                                    "type": "custom",
+                                                    "w": "8vw",  //width
+                                                    //"h": "3vh",   //height
+                                                    "xcode": {   //xcode..by using it you can pass your existing code (see => @xcode [For more info])
+                                                      //"html": ``, //Your html code
+                                                      //"css": ``,  //Your css code
+                                                      //"js": ``,  //Your js code
+                                                      "dom": () => {
+                                                        let mDiv = document.createElement("div");
+                                                        mDiv.innerHTML = "Export as:";
+                                                        mDiv.style.fontSize = "1.7vh";
+                                                        return mDiv;
+                                                      }, //Your DOM eg => document.createElement("div")
+                                                    },
+                      
+                                                    "$mUsrData": {
+                                                      "YOUR_JSON_KEY": "", //you can return this value..and build a payload (auto) with our [Form System]
+                                                    },
+                      
+                                                },
+
+
+                                                fld_export_as_pdf, 
+                                                fld_export_as_excel
+                                                
+                                               ]
+                                         }, 
+
+                                         {
+                                            "orien": "h",
+                                            "mFieldList": [
+
+
+                                                {
+                                                    "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                                    "type": "custom",
+                                                    "w": "8vw",  //width
+                                                    //"h": "3vh",   //height
+                                                    "xcode": {   //xcode..by using it you can pass your existing code (see => @xcode [For more info])
+                                                      //"html": ``, //Your html code
+                                                      //"css": ``,  //Your css code
+                                                      //"js": ``,  //Your js code
+                                                      "dom": () => {
+                                                        let mDiv = document.createElement("div");
+                                                        mDiv.innerHTML = "Records:";
+                                                        mDiv.style.fontSize = "1.7vh";
+                                                        return mDiv;
+                                                      }, //Your DOM eg => document.createElement("div")
+                                                    },
+                      
+                                                    "$mUsrData": {
+                                                      "YOUR_JSON_KEY": "", //you can return this value..and build a payload (auto) with our [Form System]
+                                                    },
+                      
+                                                },
+
+
+                                                fld_rec_all, 
+                                                fld_rec_custom,
+
+                                                fld_rec_custom_sd,
+                                                fld_rec_custom_ed
+
+                                            ]
+                                         },
+                        
+                        
+                                        ], //(mArr1) later will be updated (*Do not place variable here instead place direct (ARRAY) )
+                                        "0": {
+                                         "0": "",
+                                         //"1": "32vh",
+                                         //"2": "0"
+                                        },
+                                        "orien": "v",
+                                     "cb": {
+                                         "mOnLoad": (mGetParams) => {
+                                             var mParams = mGetParams;
+                                             var mFormHolder = mParams['mFormHolder'];
+                                             mForm.appendChild(mFormHolder); 
+                                         },
+                                         "mOnError": (mGetParams) => {
+                                             var mParams = mGetParams;
+                                             console.log(mParams);
+                                         },
+                                     }
+                                    };
+                                    core_1mn['mForm']['mB'].set(mFormBuilder);
+
+                                    //return..
+                                    return {
+                                        "mSchema": mSchema,
+                                        "mFormBuilder": mFormBuilder,
+                                    };
+                                }
+                                let mForm_RES = mForm(mI);
+
+
+                                //Space.....
+                                core_1mn['space'].set({
+                                    "h": "12vh",
+                                    "e1": mI,
+                                });
+                    
+                    
+                                //btns..
+                                function mSet_btns(mItem) {
+                                    var mBtnList = document.createElement("div");
+                                    mBtnList.style.display = "flex";
+                                    mBtnList.style.alignItems = "center";
+                                    mBtnList.style.justifyContent = "center";
+                                    mItem.appendChild(mBtnList);  
+
+
+                                    function mSet_btn1() {
+                                        //Btn.....  
+                                        var mBtnHolder = document.createElement("div");
+                                        mBtnList.appendChild(mBtnHolder);
+                                        var mConf = { 
+                                            "e1": mBtnHolder,
+                                            "w": "7vw",
+                                            "posH": 1,
+                                            "h": "3.2vh",
+                                            "txt": {
+                                              "0": "Export",
+                                              "1": "1.3vh"
+                                             },
+                                             /*"ico": {"0": "upload_0.svg", "1": "1.7vh", "2": "1.7vh", 
+                                             //"3": "rgba(255,255,255, 1.0)"
+                                             },*/
+                    
+                                            "cb": {
+                                                "onClick": function(data){
+                                                     //set..
+                                                     core_1mn['mForm']['mV'].set({
+                                                        "form_payload": mForm_RES["mFormBuilder"]["mArr1"],
+                                                        "schema": mForm_RES["mSchema"], //schema_test
+                                                        "cb": {
+                                                            "mOnLoad": (mGetParams) => {
+                                                                //validation is success....
+                                                                var mParams = mGetParams;
+                                                                var mUsrPayload = mParams['usr_payload'];
+                                                                console.log(mUsrPayload);
+                                                                //store..
+                                                                /*let mKey1 = Object.keys(mUsrPayload)[0];
+                                                                mPayload[mKey1] = mUsrPayload[mKey1];*/
+                                                            },
+                                                            "mOnError": (mGetParams) => {
+                                                                var mParams = mGetParams;
+                                                                console.log(mParams);
+                                                            },
+                                                        }
+                                                    }); 
+                                                    
+                                                },
+                                            },
+                                            "typ": 1,
+                                            "vari": 0
+                                        };
+                                        var mBtn = core_1mn['btn']['1'].set(mConf);
+                                    }
+                                    mSet_btn1(); 
+                    
+                    
+                    
+                                }
+                                mSet_btns(mI); 
+
+
+
+                            }
+                            mSet_i1();
+    
+    
+                          }
+                          mSet_l();
+
+    
+                        }
+                    }
+                    
+                  }
+            ); 
+            //close..
+            //mEvents['dialog'].close();
+            //show..
+            mEvents['dialog'].show();
+
+            /*
+            --USAGE--
+
+            */
+        }
+    }
+
+   },
+
+
+
    //coupon..
    "coupon": {
     "set": (mE, mData) => {
@@ -690,7 +1133,7 @@ var core_kms = {
                 } 
             }, 
             {
-             "0": "No. of Persons",
+             "0": "No. of Coupons", //No. of Persons
              "key": ["NoOfPersons", "avail_coupons"],
              "col": (data, mE, i1) => {
                  mE.appendChild(mRndr["utils"]["txt3"](data, i1));
@@ -1885,6 +2328,183 @@ var core_kms = {
           }
       }
 
+   },
+
+
+
+   //spreadsheet
+   "spreadsheet": {
+     "set": (mP={
+        "e": null, //html-element
+        "file": null, //pass-file
+     }) => {
+        //set vars..
+        let mE = mP.e;
+        if (mE==null) {
+            console.error(`err: [spreadsheet.set.e] (not-found)..HTML_ELEM expected`);
+            return;
+        }
+        //all ok..
+        
+        //set..
+        //Luckysheet (Univer)
+        let mStartUniver = (mE) => {
+            core_1mn['mLoadReqLibs'].set(
+                {
+                    "mCss": [
+                        //Luckysheet....
+                        "libs/luckysheet/css/iconfont.css",
+                        "libs/luckysheet/css/luckysheet.css",
+                        "libs/luckysheet/css/plugins.css",
+                        "libs/luckysheet/css/pluginsCss.css",
+                    ],
+                    "mJS": [
+                        //https://github.com/dream-num/Luckysheet
+                      //Luckysheet.... 
+                      "libs/luckysheet/luckysheet.umd.js",
+                      "libs/luckysheet/plugin.js",
+                      "libs/luckysheet/luckyexcel.umd.js"
+                    ],
+                    "mAllLibsCallback": {
+                      "onLoad": () => {
+                          console.log("-----Luckysheet---------");
+                          setTimeout(() => {
+                            mRun();
+                          }, 200);
+                     },
+                     "onError": () => { }
+                    }
+                }
+            );
+            let mRun = () => {
+                //https://dream-num.github.io/LuckysheetDocs/
+                //https://github.com/dream-num/Luckyexcel
+                //https://github.com/dream-num/univer   (latest)
+                //https://dream-num.github.io/LuckysheetDocs/guide/sheet.html#initial
+                //(related) => https://github.com/jspreadsheet/ce  ||  https://docs.google.com/spreadsheets
+                //UI..
+                let mDiv = document.createElement("div");
+                mDiv.style.position = "relative";
+                mDiv.style.width = "100%";
+                mDiv.style.height = "100%";
+                mE.appendChild(mDiv);
+                //set..
+                let mConID = core_1mn["mUniqueId"].mGenerate(11);
+                let mCon = document.createElement("div");
+                mCon.id = mConID;
+                mCon.style = `
+                margin:0px;padding:0px;position:absolute;width:100%;height:100%;left: 0px;top: 0px;`;
+                mDiv.appendChild(mCon); 
+
+                //--set--//
+                let mSample1 = () => {
+                // Configuration item
+                const opt = {
+                    container: mP.conID, // set the id of the DOM container ('luckysheet')
+                    title: 'MN Sheet', // set the name of the table //'Luckysheet Demo'
+                    lang: 'en', // set language  //zh
+
+                    data: [{ "name": "Sheet1", color: "", 
+                    "status": "1", "order": "0", "data": [
+                        
+                    ], "config": {}, "index":0 },
+                     { "name": "Sheet2", color: "", "status": "0", "order": "1", "data": [], "config": {}, "index":1 },
+                      { "name": "Sheet3", color: "", "status": "0", "order": "2", "data": [], "config": {}, "index":2 }]
+                
+                    // More other settings...
+                };
+                
+                // Initialize the table
+                luckysheet.create(opt);
+                };
+                //mSample1();
+
+                //mWithFile..
+                let mWithFile = (file=null, mConID) => {
+                    //https://github.com/dream-num/Luckyexcel
+                    // Make sure to get the xlsx file first, and then use the global method window.LuckyExcel to convert
+                    //Note: (Luckyexcel) is an excel import and export library adapted to Luckysheet. It only supports .xlsx format files (not .xls).
+                    
+                    LuckyExcel.transformExcelToLucky(
+                        file, 
+                        function(exportJson, luckysheetfile){
+                            //--modify--//
+                            exportJson['info']['company'] = "MN Sheets";
+
+                            //--test--//(Start)
+                            //sheet..(config)
+                            let mSheetsArr = exportJson.sheets;
+                            /*mSheetsArr[0]["status"] = 0;
+                            console.log(mSheetsArr); */
+                            // "status": 1, //Worksheet active status
+                            //--test--//(End)
+
+
+
+                            //--set--//
+                            // After obtaining the converted table data, use luckysheet to initialize or update the existing luckysheet workbook
+                            // Note: Luckysheet needs to introduce a dependency package and initialize the table container before it can be used
+                            luckysheet.create({
+                                container: mConID, // luckysheet is the container id
+                                data: mSheetsArr,  //exportJson.sheets,
+                                title:exportJson.info.name,
+                                userInfo:exportJson.info.name.creator,
+
+                                //config..
+                                /*functionButton: `
+                                <button id="" class="btn btn-primary" style="padding:3px 6px;font-size: 12px;margin-right: 10px;">download</button> <button id="" class="btn btn-primary btn-danger" style=" padding:3px 6px; font-size: 12px; margin-right: 10px;">share</button> <button id="luckysheet-share-btn-title" class="btn btn-primary btn-danger" style=" padding:3px 6px; font-size: 12px; margin-right: 10px;">show data</button>
+                                `*/
+                            });
+
+                            //log..
+                            //console.log(exportJson.info);
+
+                            //Note: We need to change (Branding)
+
+                            //--modify--// //--Temporary--//
+                            let mModifyHTML = () => {
+                                let m0 = document.getElementById("luckysheet_info_detail");
+                                setTimeout(() => {
+                                    m0.style.visibility = "hidden";
+                                }, 100);
+                            };
+                            mModifyHTML();
+
+                            //log..
+                            /*console.log(`luckysheetfile:
+                            ${luckysheetfile}`);*/
+
+                        },
+                        function(err){
+                            logger.error('Import failed. Is your fail a valid xlsx?');
+                    });
+
+
+                    //log..
+                    setTimeout(() => {
+                        /*console.log(`==getluckysheetfile==`);
+                        console.log(window.luckysheet.getluckysheetfile());*/
+                    }, 500);
+
+
+                };
+                if (mP.file!=null) {
+                mWithFile(mP.file, mConID);
+                }
+
+
+            };
+
+        };
+        mStartUniver(mE);
+
+
+         /*
+        --USAGE--
+        */
+
+         
+     }
    }
 
    
