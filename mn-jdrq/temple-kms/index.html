@@ -1611,12 +1611,19 @@ let mTest = () => {
         };
         
 
-        //launch..
-        core_kms["dialogs"]["exportDta1"].set({
+        //launch..(inBuilt)
+        /*core_kms["dialogs"]["exportDta1"].set({
              "h0": "Sample Popup",
                 "h1": {
                     //"0": mItemsDD["ico"]["0"]   //filename (svg)
-                }
+            }
+        });*/
+
+        mStart_popUp({
+             "h0": "Sample Popup",
+                "h1": {
+                    //"0": mItemsDD["ico"]["0"]   //filename (svg)
+            }
         });
 
 
