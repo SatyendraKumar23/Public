@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temple KMS: (Samples)</title>
 
+    <script src="libs/ajv/ajv7.min.js"></script>
     
 
 </head>
@@ -75,6 +76,11 @@ let mTest = () => {
         mSet_Btn("Popup With Form 1").onclick = () => {
             mSamplesDiv.innerHTML = ""; //reset..
             mSet_PopupWithForm1(mSamplesDiv);
+        };
+
+        mSet_Btn("Misc").onclick = () => {
+            mSamplesDiv.innerHTML = ""; //reset..
+            mSet_Misc(mSamplesDiv);
         };
 
 
@@ -1224,7 +1230,10 @@ let mTest = () => {
                             "rec_all": false,
                             "rec_custom": false,
                             "rec_custom_sd": "",
-                            "rec_custom_ed": ""
+                            "rec_custom_ed": "",
+
+                            "my_input_fld_1": "",
+
                            };
            
 
@@ -1266,7 +1275,90 @@ let mTest = () => {
                                     });
 
                                     //schema..
-                                    let mSchema = {}; 
+                                    let mSchema = {
+	                                    "definitions": {},
+                                        "$schema": "http://json-schema.org/draft-07/schema#",
+                                        "$id": "https://example.com/object1686298484.json",
+                                        "title": "Root",
+                                        "type": "object",
+                                        "required": [
+                                            "export_as_pdf",
+                                            "export_as_excel",
+                                            "rec_all",
+                                            "rec_custom",
+                                            "rec_custom_sd",
+                                            "rec_custom_ed",
+                                            "my_input_fld_1"
+                                        ],
+                                        "properties": {
+                                            "export_as_pdf": {
+                                                "$id": "#root/export_as_pdf",
+                                                "title": "Export_as_pdf",
+                                                "type": "boolean",
+                                                "examples": [
+                                                    false
+                                                ],
+                                                "default": true
+                                            },
+                                            "export_as_excel": {
+                                                "$id": "#root/export_as_excel",
+                                                "title": "Export_as_excel",
+                                                "type": "boolean",
+                                                "examples": [
+                                                    true
+                                                ],
+                                                "default": true
+                                            },
+                                            "rec_all": {
+                                                "$id": "#root/rec_all",
+                                                "title": "Rec_all",
+                                                "type": "boolean",
+                                                "examples": [
+                                                    false
+                                                ],
+                                                "default": true
+                                            },
+                                            "rec_custom": {
+                                                "$id": "#root/rec_custom",
+                                                "title": "Rec_custom",
+                                                "type": "boolean",
+                                                "examples": [
+                                                    false
+                                                ],
+                                                "default": true
+                                            },
+                                            "rec_custom_sd": {
+                                                "$id": "#root/rec_custom_sd",
+                                                "title": "Rec_custom_sd",
+                                                "type": "string",
+                                                "default": "",
+                                                "examples": [
+                                                    ""
+                                                ],
+                                                "pattern": "^.*$"
+                                            },
+                                            "rec_custom_ed": {
+                                                "$id": "#root/rec_custom_ed",
+                                                "title": "Rec_custom_ed",
+                                                "type": "string",
+                                                "default": "",
+                                                "examples": [
+                                                    ""
+                                                ],
+                                                "pattern": "^.*$"
+                                            },
+                                            "my_input_fld_1": {
+                                                "$id": "#root/my_input_fld_1",
+                                                "title": "My_input_fld_1",
+                                                "type": "string",
+                                                "default": "",
+                                                "examples": [
+                                                    ""
+                                                ],
+                                                "pattern": "^.*$"
+                                            }
+                                        }
+                                    }; 
 
                                     //fld..
                                     let fld_export_as_pdf = {
@@ -1287,6 +1379,7 @@ let mTest = () => {
                                             "export_as_pdf": def_payload.export_as_pdf,
                                         }, 
                                     };
+
                                     let fld_export_as_excel = {
                                         "elementID": core_1mn['mUniqueId'].mGenerate(11),
                                         "type": "cbox",
@@ -1303,7 +1396,7 @@ let mTest = () => {
 
                                         "$mUsrData": {
                                             "export_as_excel": def_payload.export_as_excel,
-                                        }, 
+                                        },
                                     };
                                     let fld_rec_all = {
                                         "elementID": core_1mn['mUniqueId'].mGenerate(11),
@@ -1430,16 +1523,19 @@ let mTest = () => {
                                                       //"css": ``,  //Your css code
                                                       //"js": ``,  //Your js code
                                                       "dom": () => {
-                                                        let mDiv = document.createElement("div");
-                                                        mDiv.innerHTML = "Export as:";
+                                                        let mDiv = document.createElement("input");
+                                                        mDiv.placeholder = "Export as";
                                                         mDiv.style.fontSize = "1.7vh";
                                                         return mDiv;
                                                       }, //Your DOM eg => document.createElement("div")
                                                     },
                       
                                                     "$mUsrData": {
-                                                      "YOUR_JSON_KEY": "", //you can return this value..and build a payload (auto) with our [Form System]
+                                                      "YOUR_JSON_KEY1": "", //you can return this value..and build a payload (auto) with our [Form System]
                                                     },
+                                                    "$mUsrDataCONF": {
+                                                      "returnDta": false, //default (true) [if=>true then ($mUsrData) will return data] [if=>false ($mUsrData) will not return data]
+                                                    }
                       
                                                 },
 
@@ -1473,8 +1569,12 @@ let mTest = () => {
                                                     },
                       
                                                     "$mUsrData": {
-                                                      "YOUR_JSON_KEY": "", //you can return this value..and build a payload (auto) with our [Form System]
+                                                      "YOUR_JSON_KEY2": "", //you can return this value..and build a payload (auto) with our [Form System]
                                                     },
+
+                                                    "$mUsrDataCONF": {
+                                                      "returnDta": false, //default (true) [if=>true then ($mUsrData) will return data] [if=>false ($mUsrData) will not return data]
+                                                    }
                       
                                                 },
 
@@ -1487,6 +1587,56 @@ let mTest = () => {
 
                                             ]
                                          },
+
+
+
+
+
+                                         {
+                                            "orien": "h",
+                                            "mFieldList": [
+
+
+                                            {
+                                                    "elementID": core_1mn['mUniqueId'].mGenerate(11),
+                                                    "type": "input",
+                                                    "dataType": "text",
+                                                    "placeholder": "Your value",
+                                                    "maxLength": 60, //schema_test['properties']['mPassword']['maxLength'],
+                                                    "endIco": "eye_0.svg", //"info_0.svg",
+                                                    "autocomplete": false,
+                                                    "label": "Your label",
+                                                    "s_label": "Rs:",
+                                                    "e_label": "%",
+
+                                                    //cb..
+                                                    "cb": {
+                                                        "onInput": function (data) {
+                                                            var m0 = data['0']; //value
+                                                            console.log(m0);
+                                                        }
+                                                    },
+
+                                                    "$mUsrData": {
+                                                        "my_input_fld_1": def_payload.my_input_fld_1,
+                                                    },
+
+                                                    /*"$mUsrDataCONF": {
+                                                      "returnDta": false, //default (true) [if=>true then ($mUsrData) will return data] [if=>false ($mUsrData) will not return data]
+                                                    }*/
+
+                                            },
+
+                                            ]
+                                         },
+
+
+
+
+                                         
+
+
+
                         
                         
                                         ], //(mArr1) later will be updated (*Do not place variable here instead place direct (ARRAY) )
@@ -1630,7 +1780,37 @@ let mTest = () => {
     };
 
 
-    
+ 
+    //----misc----//
+    let mSet_Misc = (mRootE=document.body) => {
+        let mDiv = document.createElement("div");
+        mDiv.style.margin = "10vh";
+        mRootE.appendChild(mDiv);
+
+        //set..
+        //set..
+        let mBox = document.createElement("div");
+        mDiv.appendChild(mBox);
+        mBox.innerHTML = `
+        
+        ----Resources for dynamic Table generation----
+        <br>
+<a href="https://www.valentinog.com/blog/html-table/" > link 1 </a>
+<br>
+
+<a href="https://medium.com/wdstack/quick-blurb-generating-a-table-from-an-array-in-javascript-41386fd449a9" > link 2 </a>
+<br>
+
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Traversing_an_HTML_table_with_JavaScript_and_DOM_Interfaces" > link 3 </a>
+<br>
+
+<a href="https://www.aspsnippets.com/Articles/Create-dynamic-Table-in-HTML-at-runtime-using-JavaScript.aspx" > link 4 </a>
+
+        `;
+
+    };
+
+
 
 
 

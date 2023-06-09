@@ -12679,7 +12679,9 @@ tbl.appendChild(row); // appending each row into calendar body.
 
     ],
     "1": {
-    "set": (mGetParams={"w":"","h":"","typ":0, 
+    "set": (mGetParams={
+    "e1": document.body,  
+    "w":"","h":"","typ":0, 
     "txt1":{
       "v": "", //text
       "c": "", //color
@@ -12694,7 +12696,7 @@ tbl.appendChild(row); // appending each row into calendar body.
       var mW = mParams['w']!=undefined ? mParams['w'] : "20vw"; //100%
       var mH = mParams['h']!=undefined ? mParams['h'] : "4vh"; //100%
       var mTyp = mParams['typ']!=undefined ? mParams['typ'] : 0; //type ["DEFAULT", "LIGHT"]
-      var mE1 = document.body; //mParams['e1']; //@req
+      var mE1 = mParams['e1']!=undefined ? mParams['e1'] : document.body; //mParams['e1']; //@req  //document.body
       let mTxt1 = mParams['txt1']!=undefined ? mParams['txt1'] : {
         "v": "", //text
         "c": "#fff", //color
@@ -12712,6 +12714,7 @@ tbl.appendChild(row); // appending each row into calendar body.
       let mCssID = "mn-snackbar-css";
       let mID1 = "snackbar";
       let mSet_css = (mID, mID1) => {
+        let v_css_1 = "120px";
         let css = `
         /* The snackbar - position it at the bottom and in the middle of the screen */
         #${mID1} {
@@ -12723,10 +12726,10 @@ tbl.appendChild(row); // appending each row into calendar body.
           text-align: center; /* Centered text */
           border-radius: 2px; /* Rounded borders */
           padding: 16px; /* Padding */
-          position: fixed; /* Sit on top of the screen */
+          position: absolute; /* Sit on top of the screen */  /*fixed*/
           z-index: 1; /* Add a z-index if needed */
-          left: 50%; /* Center the snackbar */
-          bottom: 30px; /* 30px from the bottom */
+          left: 80%; /* Center the snackbar */  /*50%*/
+          bottom: ${v_css_1}; /* 30px from the bottom */  /*30px*/
         }
         
         /* Show the snackbar when clicking on a button (class added with JavaScript) */
@@ -12741,26 +12744,32 @@ tbl.appendChild(row); // appending each row into calendar body.
         /* Animations to fade the snackbar in and out */
         @-webkit-keyframes fadein {
           from {bottom: 0; opacity: 0;}
-          to {bottom: 30px; opacity: 1;}
+          to {bottom:  ${v_css_1}; opacity: 1;}
         }
         
         @keyframes fadein {
           from {bottom: 0; opacity: 0;}
-          to {bottom: 30px; opacity: 1;}
+          to {bottom:  ${v_css_1}; opacity: 1;}
         }
         
         @-webkit-keyframes fadeout {
-          from {bottom: 30px; opacity: 1;}
+          from {bottom:  ${v_css_1}; opacity: 1;}
           to {bottom: 0; opacity: 0;}
         }
         
         @keyframes fadeout {
-          from {bottom: 30px; opacity: 1;}
+          from {bottom:  ${v_css_1}; opacity: 1;}
           to {bottom: 0; opacity: 0;}
         }  
         `;
+
+        //set..
+        let mE_css;
+        if (document.getElementById(mID)!=null) {
+          mE_css = document.getElementById(mID);
+        }
         if (document.getElementById(mID)==null) {
-         var mE_css = document.createElement("style");
+         mE_css = document.createElement("style");
          mE_css.id = "global-css";
          mE_css.innerHTML = css;
          document.head.appendChild(mE_css);
@@ -12769,13 +12778,20 @@ tbl.appendChild(row); // appending each row into calendar body.
       mSet_css(mCssID, mID1);
 
 
+      //cov..
+      let mCov = document.createElement("div");
+      //mCov.style.backgroundColor = "red";
+      mCov.style.position = "relative";
+      mE1.appendChild(mCov);
+
+
       //set.....
       var mT = document.createElement("div");
       mT.id = mID1;
       mT.style.width = mW;
       mT.style.height = mH;
       //mT.style.backgroundColor = core_1mn["sep"]["conf"][mTyp]["0"];
-      mE1.appendChild(mT);
+      mCov.appendChild(mT);
 
       //set..
       let mSet_c = (mE) => {
@@ -12825,19 +12841,26 @@ tbl.appendChild(row); // appending each row into calendar body.
       };
       mSet_c(mT);
 
+      //console.log(mE1);
 
       //test..
       // Add the "show" class to DIV
       mT.className = "show";
       // After 3 seconds, remove the show class from DIV
-      setTimeout(function(){ 
-        mT.className = mT.className.replace("show", "");
+       let mTO1 = setTimeout(() => {
+        clearInterval(mTO1);
+        //set..
+        //mT.className = mT.className.replace("show", "");
         //mT.remove();
-       }, 3000);
+        mCov.remove();
+       }, 2700); //3000
+
+       
 
       /*
       --USAGE--
       core_1mn["toast"]["1"].set({
+        "e1": YOUR_DOM_ELEM
         "svg1": {
             "v": "search_0.svg",
             "c": "orange",
