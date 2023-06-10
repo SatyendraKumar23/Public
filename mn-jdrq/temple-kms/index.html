@@ -1805,10 +1805,137 @@ let mTest = () => {
 <br>
 
 <a href="https://www.aspsnippets.com/Articles/Create-dynamic-Table-in-HTML-at-runtime-using-JavaScript.aspx" > link 4 </a>
+<br>
 
-        `;
+
+        `
+        +
+
+        `
+        <br>
+        
+        ----Resources for Charts----
+        <br>
+<a href="https://developers.google.com/chart/interactive/docs/quick_start" > Google Charts </a>
+<br>
+
+<a href="https://www.chartjs.org/" > ChartJS </a>
+<br>
+
+<br>
+
+       --------Javascript (DataType Info) [*Must Read*]----------
+       <br>
+       <a href="https://www.w3schools.com/js/js_typeof.asp" > W3 Schools </a>
+       <br>
+       
+
+ 
+        `
+        
+        
+        ;
 
     };
+
+
+
+
+    //-----Harshita----//
+    let mFn_Harshita = () => {
+
+        /**
+         * @Problem => Not able to get data from [HTML FORM]
+         * @Solution_Status => FIXED
+        */
+        let ISSUE_1_FIXED = () => {
+            // Create a break line element
+        var br = document.createElement("br");
+        var data;
+
+        // Create a form dynamically
+        var form = document.createElement("form");
+
+        // Create an input element for Full Name
+        var FN = document.createElement("input");
+        FN.setAttribute("type", "text");
+        //FN.setAttribute("id", "fullName");
+        FN.id = "fullName";
+        FN.setAttribute("placeholder", "Full Name");
+        // Append the full name input to the form
+        form.appendChild(FN);
+
+        document.getElementsByTagName("body")[0]
+            .appendChild(form);
+
+        console.log(document.getElementById("fullName").value)
+        console.log(fullName.value)
+
+        // Create an input element for age
+        var age = document.createElement("input");
+        age.setAttribute("type", "text");
+        age.setAttribute("id", "age");
+        age.setAttribute("placeholder", "Age");
+
+        var country = document.createElement("input");
+        country.setAttribute("type", "text");
+        country.setAttribute("id", "country");
+        country.setAttribute("placeholder", "Country");
+
+        // create a submit button
+        var s = document.createElement("input");
+        //s.setAttribute("type", "submit"); //Do Not use else page will refresh
+        s.setAttribute("type", "Button");
+        s.setAttribute("value", "Submit");
+        s.setAttribute("id", "Submit");
+
+        // Append the full name input to the form
+        //form.appendChild(FN);
+
+        // Inserting a line break
+        form.appendChild(br.cloneNode());
+
+     
+        form.appendChild(age);
+        form.appendChild(br.cloneNode());
+
+     
+        form.appendChild(country);
+        form.appendChild(br.cloneNode());
+
+        // Append the submit button to the form
+        form.appendChild(s);
+
+        /*document.getElementsByTagName("body")[0]
+            .appendChild(form);*/
+
+        console.log(document.getElementById("fullName").value)
+
+        var firstname = document.getElementById("fullName")
+        var lastname = document.getElementById("age")
+        var country = document.getElementById("country")
+        var Submit = document.getElementById("Submit")
+            //var jsonText = document.getElementById("jsontext")
+
+
+        Submit.addEventListener("click", function() {
+            data = {
+                    "fullName": fullName.value,
+                    "age": age.value,
+                    "country": country.value
+                }
+
+        console.log(data);
+
+                
+        })
+        //console.log(data);
+
+        };
+         
+        ISSUE_1_FIXED();
+    }
+    mFn_Harshita();
 
 
 
