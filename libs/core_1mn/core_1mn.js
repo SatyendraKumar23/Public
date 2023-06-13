@@ -71,6 +71,18 @@ location /sites/mn/site8/mn_account {
                "js":  `<script> </script>`,
                "dom": () => {return DOM;} || DOM, //Your DOM eg => document.createElement("div")
             }
+*/
+
+//------------------------Notes (Avoid doing these things)----------------------//
+/**
+ * https://stackoverflow.com/questions/59637239/uncaught-domexception-failed-to-execute-queryselector-on-document-is-no
+ * @DO_NOT_SELECT_ID_WITH = ["#","1"..] because some charaters is not Supported  instead use "document.querySelector('[id="foo$bar"] .item')"
+ * eg => Uncaught (in promise) DOMException: Failed to execute 'querySelector' on 'Document': '#3Tmy8Ai8A5Z_456 .luckysheet-wa-editor' is not a valid selector.
+*/
+//--------------------------Javascript (DataType Info)---------------------------//
+/**
+ * @MUST_READ
+ * https://www.w3schools.com/js/js_typeof.asp
  */
  
 
@@ -1632,7 +1644,8 @@ var core_1mn = {
       //generate unique id......
       //mGenerateUniqueId(11);
       var mId = "";
-      var characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'; //(63)
+      //var characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'; //(63)  --OLD--
+      var characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; //(63) --NEW-- [Note: We removed Special Characters..because of (id selection with#)].
       //console.log(characters.length);
       var mIdLength = getDigit;
       for (let i1 = 0; i1 < mIdLength; i1++) {
@@ -1647,7 +1660,8 @@ var core_1mn = {
 
       //id generated success....
       core_1mn['mUniqueId']['mIndex']=core_1mn['mUniqueId']['mIndex']+=1;
-      var mUniqueId = mId +"_"+ core_1mn['mUniqueId']['mIndex'];
+      //var mUniqueId = mId +"_"+ core_1mn['mUniqueId']['mIndex']; --OLD--
+      var mUniqueId = "a" + mId +""+ core_1mn['mUniqueId']['mIndex']; //--NEW-- [Note: We removed Special Characters..because of (id selection with#)].
       //console.log(mUniqueId);
 
 
@@ -5391,17 +5405,60 @@ var mBtn = core_1mn['btn']['4'].set({
 
           */
         }
+      },
+
+
+      //ui_dta_mn //(Use Case => if we [$mUsrDta.returnHTML=true] then we parse that attr..and we are able use that data )
+      "ui_dta_mn": {
+        //init with empty string..Later we will evaluate
+         "init": (mE) => {
+          /**
+           * @mE => DOM_ELEM
+          */ 
+          mE.setAttribute("ui_dta_mn", ""); //init with empty string..Later we will evaluate
+         },
+         "evaluate": (mHTML) => {
+          /**
+           * @mHTML => DOM_ELEM
+          */
+          let mKey = "ui_dta_mn";
+          let ui_dta_mn_ARR = mHTML.querySelectorAll(`[${mKey}=""]`);
+          let mBuild = (a) => {
+            for (let i = 0; i < a.length; i++) {
+              const e = a[i];
+              //set..
+              if (e.tagName == "INPUT") {
+                e.setAttribute(mKey, e.value);
+              }
+              if (e.tagName == "DIV") {
+                e.setAttribute(mKey, e.innerHTML);
+              }
+              /*console.log(`=====${mKey}=====`);
+              console.log(e);
+              console.log(e.tagName);*/
+            }
+          };
+          mBuild(ui_dta_mn_ARR);
+
+         }
       }
+
 
 
     },
 
     "mR": { //rendrer.....
 
+      
+
       /*
       --Global USAGE params (of all type)--
       "$mUsrDataCONF": {
         "returnDta": false, //default (true) [if=>true then ($mUsrData) will return data] [if=>false ($mUsrData) will not return data]
+        "returnHTML": false, 
+                    //default (false) [if=>true then ($mUsrData) will return Complete Field HTML ]
+                    //1- Field (--UI Data--) can be retrive by using [attr="ui_dta_mn"] eg=> (ui_dta_mn="John Doe")
+
 
       }
       //https://www.w3schools.com/tags/att_input_readonly.asp
@@ -5590,6 +5647,11 @@ var mBtn = core_1mn['btn']['4'].set({
               mLabel.style.fontSize = "1.4vh";
               mLabel.style.color = "rgba(34,34,34, 0.6)";
               mE.appendChild(mLabel);
+
+              //init..[------ui_dta_mn-----]
+              core_1mn["mForm"]["mUtil"].ui_dta_mn
+              .init(mLabel);
+
             } 
           };
           mPrefix_label(mDiv);
@@ -5621,6 +5683,13 @@ var mBtn = core_1mn['btn']['4'].set({
           mInput.autocomplete = mCurrDta1['autocomplete'];
           mDiv.appendChild(mInput);
 
+
+           //init..[------ui_dta_mn-----]
+           core_1mn["mForm"]["mUtil"].ui_dta_mn
+           .init(mInput);
+          
+  
+
           //events....
           mInput.onfocus = function(){
             var mCurrItemId = this.id;
@@ -5646,6 +5715,8 @@ var mBtn = core_1mn['btn']['4'].set({
               "0": mInput.value
             });
           };
+          
+
 
 
           //suffix..(label)
@@ -5660,6 +5731,11 @@ var mBtn = core_1mn['btn']['4'].set({
               mLabel.style.fontSize = "1.4vh";
               mLabel.style.color = "rgba(34,34,34, 0.6)";
               mE.appendChild(mLabel);
+
+              //init..[------ui_dta_mn-----]
+              core_1mn["mForm"]["mUtil"].ui_dta_mn
+              .init(mLabel);
+
             } 
           };
           mSuffix_label(mDiv);
@@ -5761,7 +5837,9 @@ var mBtn = core_1mn['btn']['4'].set({
           //****store (elements)
           mCurrDta1['mElemDta'] = {
             "mTooltip": mTooltip,
-            "mInputE": mInput
+            "mInputE": mInput,
+
+            "mDivRoot": mDivRoot, //Complete Field
           };
 
           //------mSchValiRulesOnUI-----//
@@ -5784,6 +5862,9 @@ var mBtn = core_1mn['btn']['4'].set({
         var mUsrPayload = mParams['mUsrPayload']; //need to (build)
         var mUsrData = mFormCurrItem['$mUsrData'];
         let mSchema = mParams['mSchema'];
+        let mUsrDataCONF = mFormCurrItem['$mUsrDataCONF'];
+        let mReturnHTML = mParams["returnHTML"];
+
 
         var mErrInfo = {
           "isErr": true,
@@ -5803,10 +5884,12 @@ var mBtn = core_1mn['btn']['4'].set({
           //--Auto set (datatype) of input value--//
           let mKey = Object.keys(mUsrData)[0];
           let mDefVal = undefined;
+          if (mSchema.hasOwnProperty("properties")) {
           if (mSchema["properties"].hasOwnProperty(mKey)) {
             if (mSchema["properties"][mKey].hasOwnProperty("default")) {
                mDefVal = mSchema["properties"][mKey]["default"];
             }
+          }            
           }
           /*console.log(`==mDefVal==`);
           console.log(mDefVal);*/
@@ -5843,6 +5926,32 @@ var mBtn = core_1mn['btn']['4'].set({
               mUsrData[mKey] = mVal;
               //add....
               mUsrPayload[mKey] = mUsrData[mKey];
+
+
+
+              //----HTML----//
+              let mSet_HTML = () => {
+                    //"returnHTML": false, //default (false) [if=>true then ($mUsrData) will return Complete Field HTML ]
+                    //evaluate..[------ui_dta_mn-----]
+                    core_1mn["mForm"]["mUtil"].ui_dta_mn
+                    .evaluate(mFormCurrItem['mElemDta']["mDivRoot"]);
+                    //add....
+                    mUsrPayload[`${mKey}`] = mFormCurrItem['mElemDta']["mDivRoot"];
+              };
+              if (mUsrDataCONF!=undefined) {
+                  if (mUsrDataCONF.hasOwnProperty("returnHTML")) {
+                    if (mUsrDataCONF["returnHTML"]==true) {
+                       mSet_HTML();
+                    }
+                  }
+              }
+              if (mReturnHTML!=undefined) {
+                 if (mReturnHTML==true) {
+                      mSet_HTML();
+                 }
+              }
+
+
            }
 
 
@@ -7031,6 +7140,14 @@ var mBtn = core_1mn['btn']['4'].set({
 
                      mDiv.appendChild(mInput);
 
+
+                    //init..[------ui_dta_mn-----]
+                    core_1mn["mForm"]["mUtil"].ui_dta_mn
+                     .init(mInput);
+
+                     
+
+
                      //-------events------//
                      if (mCurrDta1["events"]!=undefined) {
                       if (mCurrDta1["events"].hasOwnProperty("click")==true) {
@@ -7903,7 +8020,10 @@ var mBtn = core_1mn['btn']['4'].set({
         //****store (elements)
         mCurrDta1['mElemDta'] = {
           "mTooltip": mTooltip,
-          "mInputE": mInput
+          "mInputE": mInput,
+
+          "mDivRoot": mDivRoot, //Complete Field
+
         }; 
         
 
@@ -7920,6 +8040,7 @@ var mBtn = core_1mn['btn']['4'].set({
         var mUsrData = mFormCurrItem['$mUsrData'];
         let mUsrDataCONF = mFormCurrItem['$mUsrDataCONF'];
         let mSchema = mParams["mSchema"];
+        let mReturnHTML = mParams["returnHTML"];
                                                       
         
 
@@ -8150,7 +8271,34 @@ var mBtn = core_1mn['btn']['4'].set({
               //store....
               mUsrData[mKey] = mVal;
               //add....
-              mUsrPayload[mKey] = mUsrData[mKey];  
+              mUsrPayload[mKey] = mUsrData[mKey];
+
+
+              
+              //----HTML----//
+              let mSet_HTML = () => {
+                //"returnHTML": false, //default (false) [if=>true then ($mUsrData) will return Complete Field HTML ]
+                //evaluate..[------ui_dta_mn-----]
+                core_1mn["mForm"]["mUtil"].ui_dta_mn
+                .evaluate(mFormCurrItem['mElemDta']["mDivRoot"]);
+                //add....
+                mUsrPayload[`${mKey}`] = mFormCurrItem['mElemDta']["mDivRoot"];
+              };
+              if (mUsrDataCONF != undefined) {
+                if (mUsrDataCONF.hasOwnProperty("returnHTML")) {
+                  if (mUsrDataCONF["returnHTML"] == true) {
+                    mSet_HTML();
+                  }
+                }
+              }
+              if (mReturnHTML != undefined) {
+                if (mReturnHTML == true) {
+                  mSet_HTML();
+                }
+              }
+
+
+
             }
 
             //log..
@@ -8201,6 +8349,7 @@ var mBtn = core_1mn['btn']['4'].set({
                                       "onPick": (mV) => {
                                         let m0 = mV["0"]; //mFinalDT
                                         let m1 = mV["1"]; //mHumanReadableDT
+                                        let m2 = mV["2"]; // { "y": mYear, "m": mMonth, "d": mDay, }
                                                                         
                                       }
                                   },
@@ -8225,10 +8374,12 @@ var mBtn = core_1mn['btn']['4'].set({
            }      
           //start elem..
             var mDivRoot = document.createElement("div");
-            mDivRoot.style.width = "100%";
+            mDivRoot.style.width = "100%";  //100%
             //mDivRoot.style.margin = "1vh 0";
             mDivRoot.style.position = "relative";
             mFormDiv.appendChild(mDivRoot);
+
+            
 
 
           const mStartE = () => {
@@ -8344,6 +8495,14 @@ var mBtn = core_1mn['btn']['4'].set({
             mInput.style.alignItems = "center";
 
             mDiv.appendChild(mInput);
+
+
+
+            //init..[------ui_dta_mn-----]
+            core_1mn["mForm"]["mUtil"].ui_dta_mn
+            .init(mInput);
+
+
 
 
             function mCloseAllDropDown() {
@@ -9156,7 +9315,12 @@ mInputItem.setAttribute("year", mSelDate['year']); //(Int)
 //send (cb)..
 mSend_cb("onPick", {
   "0": mFinalDT,
-  "1": mHumanReadableDT
+  "1": mHumanReadableDT,
+  "2": {
+    "y": mYear,  //year
+    "m": mMonth, //month
+    "d": mDay,  //day
+  }
 });
 
 }
@@ -9218,7 +9382,10 @@ tbl.appendChild(row); // appending each row into calendar body.
              //****store (elements)
              mCurrDta1['mElemDta'] = {
               "mTooltip": mTooltip,
-              "mInputE": mInput
+              "mInputE": mInput,
+
+              "mDivRoot": mDivRoot, //Complete Field
+
              };
 
 
@@ -9235,7 +9402,10 @@ tbl.appendChild(row); // appending each row into calendar body.
           var mUsrPayload = mParams['mUsrPayload']; //need to (build)
           var mUsrData = mFormCurrItem['$mUsrData'];
           let mSchema = mParams["mSchema"];
+          let mUsrDataCONF = mFormCurrItem['$mUsrDataCONF'];
+          let mReturnHTML = mParams["returnHTML"];
 
+          
           var mErrInfo = {
             "isErr": true,
             "msg": null
@@ -9287,6 +9457,35 @@ tbl.appendChild(row); // appending each row into calendar body.
                 mUsrData[mKey] = mVal;
                 //add....
                 mUsrPayload[mKey] = mUsrData[mKey];
+
+
+                
+               //----HTML----//
+               let mSet_HTML = () => {
+                 //"returnHTML": false, //default (false) [if=>true then ($mUsrData) will return Complete Field HTML ]
+                 //evaluate..[------ui_dta_mn-----]
+                 core_1mn["mForm"]["mUtil"].ui_dta_mn
+                   .evaluate(mFormCurrItem['mElemDta']["mDivRoot"]);
+                 //add....
+                 mUsrPayload[`${mKey}`] = mFormCurrItem['mElemDta']["mDivRoot"];
+               };
+               if (mUsrDataCONF != undefined) {
+                 if (mUsrDataCONF.hasOwnProperty("returnHTML")) {
+                   if (mUsrDataCONF["returnHTML"] == true) {
+                     mSet_HTML();
+                   }
+                 }
+               }
+               if (mReturnHTML != undefined) {
+                 if (mReturnHTML == true) {
+                   mSet_HTML();
+                 }
+               }
+
+
+
+
+
              }
 
 
@@ -10862,12 +11061,17 @@ tbl.appendChild(row); // appending each row into calendar body.
         //cb....
         var mCb = mParams['cb']!=undefined ? mParams['cb'] : null; //callback
 
-        //console.log(mFormPayload); //-------Need to fix bug in ($mUsrDataCONF.returnDta)------//
+        //console.log(mFormPayload);
 
         //filter (mFormPayload)..
         const mFilter_FP = (mArr1) => {
+          //--OLD--//   
+          /*
+          Note: In Old Approach.. "mFormPayload.splice(i1, 1);" that method does not work as expected
+          1- That's why we have a bug in ($mUsrDataCONF.returnDta)..
+          */
           //gen
-          for (let i1 = 0; i1 < mArr1.length; i1++) {
+          /*for (let i1 = 0; i1 < mArr1.length; i1++) {
             const mCurrDta1 = mArr1[i1];
             //console.log(mCurrDta1);
             //console.log(JSON.stringify(mCurrDta1["$mUsrData"], null, 2));
@@ -10877,7 +11081,6 @@ tbl.appendChild(row); // appending each row into calendar body.
                console.warn(`Vali..not implemented for [type=custom], so we are skipping..`);
                mFormPayload.splice(i1, 1);
             }
-
 
             //remove (if)..
             if (mCurrDta1["$mUsrDataCONF"]!=undefined) {
@@ -10889,9 +11092,55 @@ tbl.appendChild(row); // appending each row into calendar body.
                 }
               }
             }
+          }*/
+
+          
+          //--NEW--//
+          //set vars..
+          let mNew = [];
+          for (let i1 = 0; i1 < mArr1.length; i1++) {
+            const mCurrDta1 = mArr1[i1];
+            //console.log(mCurrDta1);
+            //console.log(JSON.stringify(mCurrDta1["$mUsrData"], null, 2));
+            //set vars..
+            let mIsNeedToStore = true;
+
+            //disable..[custom]
+            if (mCurrDta1["type"]=="custom") {
+               console.warn(`Vali..not implemented for [type=custom], so we are skipping..`);
+               //mFormPayload.splice(i1, 1);
+               mIsNeedToStore=false;
+            }
+
+            //remove (if)..
+            if (mCurrDta1["$mUsrDataCONF"]!=undefined) {
+              if (mCurrDta1["$mUsrDataCONF"]["returnDta"]!=undefined) {
+                if (mCurrDta1["$mUsrDataCONF"]["returnDta"]==false) {
+                    //(remove) no need to store.. [if=>false ($mUsrData) will not return data]
+                    //mFormPayload.splice(i1, 1);
+                    mIsNeedToStore=false;
+                    //return;  //----Need to test-----//  --OLD-- (return)
+                }
+              }
+            }
+
+
+            //check & store..
+            if (mIsNeedToStore==true) {
+               mNew.push(mCurrDta1);
+            }
+
           }
+
+          //store..
+          mFormPayload = mNew;
+
+
         };
         mFilter_FP(mFormPayload);
+
+        //--log--//
+        //console.log(mFormPayload);
 
         //here we set usr payload.....
         mSet_usrPayload();
@@ -10920,7 +11169,8 @@ tbl.appendChild(row); // appending each row into calendar body.
             var mUsrData = setDataJSON({
               "mFormCurrItem": mCurrI,
               "mUsrPayload": mUsrPayload,
-              "mSchema": mSchema
+              "mSchema": mSchema,
+              "returnHTML": mParams["returnHTML"]
             });
             if(mUsrData.hasOwnProperty("isErr")==true){
               //error....
@@ -11145,6 +11395,7 @@ tbl.appendChild(row); // appending each row into calendar body.
         core_1mn['mForm']['mV'].set({
                                   "form_payload": mFormPayload_Test,
                                   "schema": schema_test,
+                                  //"returnHTML": true         //@See => core_1mn["mForm"]["mR"] {--Global USAGE params (of all type)--} [$mUsrDataCONF["returnHTML"]]
                                   "cb": {
                                       "mOnLoad": (mGetParams) => {
                                           //validation is success....
@@ -12612,7 +12863,7 @@ tbl.appendChild(row); // appending each row into calendar body.
     "conf": [ //configuration..
     {
       "name": "DEFAULT",
-      "0": "rgba(201,192,192, 1)"
+      "0": "rgba(201,192,192, 1)"  //rgba(201,192,192, 1) || transparent
     },
     {
       "name": "LIGHT",
