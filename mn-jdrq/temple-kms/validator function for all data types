@@ -1,0 +1,22 @@
+function validateDataType(value, dataType) {
+  switch (dataType) {
+    case 'string':
+      return typeof value === 'string';
+    case 'number':
+      return typeof value === 'number' && isFinite(value);
+    case 'boolean':
+      return typeof value === 'boolean';
+    case 'array':
+      return Array.isArray(value);
+    case 'object':
+      return typeof value === 'object' && !Array.isArray(value) && value !== null;
+    case 'function':
+      return typeof value === 'function';
+    case 'null':
+      return value === null;
+    case 'undefined':
+      return typeof value === 'undefined';
+    default:
+      return false;
+  }
+}
